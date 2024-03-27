@@ -23,10 +23,10 @@ class Splash : AppCompatActivity() {
 
 
         Handler(Looper.getMainLooper()).postDelayed(Runnable {
-            val i = Intent(this@Splash, MainActivity::class.java)
+            val i = Intent(this@Splash, Login::class.java)
             startActivity(i)
             finish()
-        }, 1500)
+        }, 1000)
 
     }
 }
