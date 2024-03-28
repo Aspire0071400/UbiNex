@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".auth.Login">
+    tools:context=".auth.OTPAuth">
 
     <ImageView
         android:id="@+id/imageView2"
@@ -16,57 +16,51 @@
         android:src="@drawable/logo_no_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:importantForAccessibility="no" />
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="UbiNex will send OTP to your Number"
+        android:text="Enter the 6-digit OTP that you received"
         app:layout_constraintEnd_toEndOf="@+id/imageView2"
         app:layout_constraintStart_toStartOf="@+id/imageView2"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
-    <com.hbb20.CountryCodePicker
-        android:id="@+id/ccp"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        app:ccp_showFullName="true"
-        app:ccp_showNameCode="false"
-        app:ccp_showPhoneCode="true"
-        app:layout_constraintEnd_toEndOf="@+id/textView6"
-        app:layout_constraintStart_toStartOf="@+id/textView6"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
     <EditText
-        android:id="@+id/phone_number_edt"
+        android:id="@+id/otp_edt"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="64dp"
         android:ems="10"
-        android:hint="Enter Number"
+        android:hint="Enter OTP"
+        android:inputType="number"
+        android:maxLength="6"
+        android:digits="0123456789"
+        android:filterTouchesWhenObscured="true"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textStyle="bold"
-        android:inputType="phone"
-        app:layout_constraintEnd_toEndOf="@+id/ccp"
-        app:layout_constraintStart_toStartOf="@+id/ccp"
-        app:layout_constraintTop_toBottomOf="@+id/ccp" />
+        app:layout_constraintEnd_toEndOf="@+id/textView6"
+        app:layout_constraintStart_toStartOf="@+id/textView6"
+        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        android:importantForAutofill="no" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/send_otp_btn"
+        android:id="@+id/login_btn"
         android:layout_width="120dp"
         android:layout_height="40dp"
         android:layout_marginTop="64dp"
-        android:text="Send OTP"
+        android:text="Login"
         android:clickable="true"
         android:textColor="@color/white"
         android:background="@drawable/button_background"
         android:textAllCaps="false"
-        app:layout_constraintEnd_toEndOf="@+id/phone_number_edt"
-        app:layout_constraintStart_toStartOf="@+id/phone_number_edt"
-        app:layout_constraintTop_toBottomOf="@+id/phone_number_edt" />
+        app:layout_constraintEnd_toEndOf="@+id/otp_edt"
+        app:layout_constraintStart_toStartOf="@+id/otp_edt"
+        app:layout_constraintTop_toBottomOf="@+id/otp_edt" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
