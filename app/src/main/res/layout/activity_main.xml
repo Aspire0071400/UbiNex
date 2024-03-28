@@ -16,7 +16,9 @@
         android:layout_height="70dp"
         android:background="@color/white"
         app:itemHorizontalTranslationEnabled="true"
+        app:itemActiveIndicatorStyle="@color/transparent"
         app:itemRippleColor="@color/transparent"
+        app:itemBackground="@drawable/popup_effect"
         app:itemTextAppearanceActiveBoldEnabled="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -30,15 +32,13 @@
             android:background="@color/black" />
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 
-    <FrameLayout
-        android:id="@+id/frame"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" >
 
-    </FrameLayout>
+    </androidx.viewpager.widget.ViewPager>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
