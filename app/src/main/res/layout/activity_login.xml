@@ -42,10 +42,12 @@
 
     <EditText
         android:id="@+id/phone_number_edt"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
         android:layout_marginTop="24dp"
         android:ems="10"
+        android:background="@drawable/edt_material_background"
+        android:elevation="20dp"
         android:hint="Enter Number"
         android:textAlignment="center"
         android:textColor="@color/black"
@@ -57,8 +59,8 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/send_otp_btn"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
+        android:layout_width="130dp"
+        android:layout_height="50dp"
         android:layout_marginTop="64dp"
         android:text="Send OTP"
         android:clickable="true"
@@ -68,5 +70,17 @@
         app:layout_constraintEnd_toEndOf="@+id/phone_number_edt"
         app:layout_constraintStart_toStartOf="@+id/phone_number_edt"
         app:layout_constraintTop_toBottomOf="@+id/phone_number_edt" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/teal_main"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/send_otp_btn"
+        app:layout_constraintStart_toStartOf="@+id/send_otp_btn"
+        app:layout_constraintTop_toBottomOf="@+id/send_otp_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

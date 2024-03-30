@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation("com.hbb20:ccp:2.7.0")
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
