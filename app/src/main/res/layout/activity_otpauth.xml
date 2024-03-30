@@ -69,7 +69,7 @@
         android:id="@+id/timer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:text="time remaining :"
         android:textColor="@color/black"
         android:textSize="16sp"
@@ -82,15 +82,15 @@
         android:id="@+id/resend_otp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:text="Resend OTP"
-        android:textStyle="italic"
-        android:textSize="16sp"
-        android:visibility="gone"
         android:textColor="@color/link_blue"
+        android:textSize="16sp"
+        android:textStyle="italic"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/otp_edt"
         app:layout_constraintStart_toStartOf="@+id/otp_edt"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+        app:layout_constraintTop_toBottomOf="@+id/number_tv" />
 
     <TextView
         android:id="@+id/wrong_number"
