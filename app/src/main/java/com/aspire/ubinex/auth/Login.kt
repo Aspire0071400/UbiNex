@@ -6,8 +6,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.aspire.ubinex.MainActivity
 import com.aspire.ubinex.R
+import com.aspire.ubinex.SetupPage
 import com.aspire.ubinex.databinding.ActivityLoginBinding
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -86,15 +86,21 @@ class Login : AppCompatActivity() {
 
         override fun onVerificationFailed(e: FirebaseException) {
 
-            if (e is FirebaseAuthInvalidCredentialsException) {
-                // Invalid request
-                Toast.makeText(this@Login,"$e 1",Toast.LENGTH_SHORT).show()
-            } else if (e is FirebaseTooManyRequestsException) {
-                // The SMS quota for the project has been exceeded
-                Toast.makeText(this@Login,"$e 2",Toast.LENGTH_SHORT).show()
-            } else if (e is FirebaseAuthMissingActivityForRecaptchaException) {
-                // reCAPTCHA verification attempted with null Activity
-                Toast.makeText(this@Login,"$e 3",Toast.LENGTH_SHORT).show()
+            when (e) {
+                is FirebaseAuthInvalidCredentialsException -> {
+                    // Invalid request
+                    Toast.makeText(this@Login,"$e 1",Toast.LENGTH_SHORT).show()
+                }
+
+                is FirebaseTooManyRequestsException -> {
+                    // The SMS quota for the project has been exceeded
+                    Toast.makeText(this@Login,"$e 2",Toast.LENGTH_SHORT).show()
+                }
+
+                is FirebaseAuthMissingActivityForRecaptchaException -> {
+                    // reCAPTCHA verification attempted with null Activity
+                    Toast.makeText(this@Login,"$e 3",Toast.LENGTH_SHORT).show()
+                }
             }
 
         }
@@ -127,6 +133,7 @@ class Login : AppCompatActivity() {
 
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
                         // The verification code entered was invalid
+                        Toast.makeText(this, "Wrong OTP Entered",Toast.LENGTH_SHORT).show()
                     }
                     // Update UI
                 }
@@ -134,13 +141,13 @@ class Login : AppCompatActivity() {
     }
 
     private fun sendToMainScreen(){
-        startActivity(Intent(this,MainActivity::class.java))
+        startActivity(Intent(this,SetupPage::class.java))
     }
 
     override fun onStart() {
         super.onStart()
         if(auth.currentUser != null){
-            startActivity(Intent(this,MainActivity::class.java))
+            startActivity(Intent(this,SetupPage::class.java))
         }
     }
 

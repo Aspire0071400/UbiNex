@@ -49,6 +49,9 @@ dependencies {
     implementation("com.hbb20:ccp:2.7.0")
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

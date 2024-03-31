@@ -7,8 +7,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.aspire.ubinex.MainActivity
 import com.aspire.ubinex.R
+import com.aspire.ubinex.SetupPage
 import com.aspire.ubinex.databinding.ActivityOtpauthBinding
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -49,7 +49,7 @@ class OTPAuth : AppCompatActivity() {
             binding.resendOtp.visibility = View.GONE
             binding.timer.visibility = View.VISIBLE
 
-            resendOTP()
+            resendCode()
 
         }
 
@@ -82,10 +82,10 @@ class OTPAuth : AppCompatActivity() {
 
     }
 
-    private fun resendOTP() {
+    private fun resendCode() {
         val options = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phoneNumberToCheck)
-            .setTimeout(90L, TimeUnit.SECONDS)
+            .setTimeout(60L, TimeUnit.SECONDS)
             .setActivity(this)
             .setCallbacks(callbacks)
             .build()
@@ -99,14 +99,16 @@ class OTPAuth : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Toast.makeText(this,"Login successful",Toast.LENGTH_SHORT).show()
-                    val i = Intent(this@OTPAuth, MainActivity::class.java)
+                    val i = Intent(this@OTPAuth, SetupPage::class.java)
                     startActivity(i)
+                    finish()
 
                 } else {
                     // Sign in failed, display a message and update the UI
 
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
                         // The verification code entered was invalid
+                        Toast.makeText(this, "Wrong OTP Entered",Toast.LENGTH_SHORT).show()
                     }
                     // Update UI
                 }
@@ -123,15 +125,21 @@ class OTPAuth : AppCompatActivity() {
 
         override fun onVerificationFailed(e: FirebaseException) {
 
-            if (e is FirebaseAuthInvalidCredentialsException) {
-                // Invalid request
-                Toast.makeText(this@OTPAuth,"$e",Toast.LENGTH_SHORT).show()
-            } else if (e is FirebaseTooManyRequestsException) {
-                // The SMS quota for the project has been exceeded
-                Toast.makeText(this@OTPAuth,"$e",Toast.LENGTH_SHORT).show()
-            } else if (e is FirebaseAuthMissingActivityForRecaptchaException) {
-                // reCAPTCHA verification attempted with null Activity
-                Toast.makeText(this@OTPAuth,"$e",Toast.LENGTH_SHORT).show()
+            when (e) {
+                is FirebaseAuthInvalidCredentialsException -> {
+                    // Invalid request
+                    Toast.makeText(this@OTPAuth,"$e 1",Toast.LENGTH_SHORT).show()
+                }
+
+                is FirebaseTooManyRequestsException -> {
+                    // The SMS quota for the project has been exceeded
+                    Toast.makeText(this@OTPAuth,"$e 2",Toast.LENGTH_SHORT).show()
+                }
+
+                is FirebaseAuthMissingActivityForRecaptchaException -> {
+                    // reCAPTCHA verification attempted with null Activity
+                    Toast.makeText(this@OTPAuth,"$e 3",Toast.LENGTH_SHORT).show()
+                }
             }
 
         }
@@ -140,14 +148,14 @@ class OTPAuth : AppCompatActivity() {
             verificationId: String,
             token: PhoneAuthProvider.ForceResendingToken ) {
             OTP = verificationId
-            resendToken = token
+            //resendToken = token
             Toast.makeText(this@OTPAuth,"OTP has been sent to your number",Toast.LENGTH_SHORT).show()
             timer.cancel()
             timer.start()
         }
     }
 
-    private val timer = object : CountDownTimer(90000, 1000) { // 60 seconds countdown
+    private val timer = object : CountDownTimer(60000, 1000) { // 60 seconds countdown
         override fun onTick(millisUntilFinished: Long) {
             val secondsRemaining = millisUntilFinished / 1000
             // Update UI with remaining time
@@ -157,6 +165,7 @@ class OTPAuth : AppCompatActivity() {
         override fun onFinish() {
             // Handle timeout (if needed)
             binding.timer.visibility = View.INVISIBLE
+            binding.resendOtp.visibility = View.VISIBLE
         }
     }
 
