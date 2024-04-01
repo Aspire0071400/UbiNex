@@ -6,8 +6,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.aspire.ubinex.MainActivity
 import com.aspire.ubinex.R
-import com.aspire.ubinex.SetupPage
 import com.aspire.ubinex.databinding.ActivityLoginBinding
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
@@ -103,14 +103,10 @@ class Login : AppCompatActivity() {
         }, 3000)
     }
 
-
-
     override fun onStart() {
         super.onStart()
         if(auth.currentUser != null){
-            startActivity(Intent(this,SetupPage::class.java))
+            startActivity(Intent(this,MainActivity::class.java))
         }
     }
-
-
 }

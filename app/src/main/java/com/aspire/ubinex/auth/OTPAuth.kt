@@ -7,6 +7,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.aspire.ubinex.MainActivity
 import com.aspire.ubinex.R
 import com.aspire.ubinex.SetupPage
 import com.aspire.ubinex.databinding.ActivityOtpauthBinding
@@ -16,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import java.util.concurrent.TimeUnit
 
 
@@ -24,7 +26,7 @@ class OTPAuth : AppCompatActivity() {
     private lateinit var phoneNumberToCheck : String
     private lateinit var auth : FirebaseAuth
     private lateinit var otp : String
-    private lateinit var reToken : PhoneAuthProvider.ForceResendingToken
+    private lateinit var fireStoreDB : FirebaseFirestore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOtpauthBinding.inflate(layoutInflater)
@@ -71,6 +73,27 @@ class OTPAuth : AppCompatActivity() {
             }
         }
 
+
+        if (auth.currentUser != null) {
+            // User is signed in, check if the user exists in Firestore
+            val uid = auth.currentUser!!.uid
+            val userRef = fireStoreDB.collection("users").document(uid)
+            userRef.get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        // Existing user found, jump to MainActivity
+                        val intent = Intent(this@OTPAuth, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        // New user, continue with setup
+                        Toast.makeText(this,"Welcome New User",Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(this, "Error checking user existence: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
 
     }
 

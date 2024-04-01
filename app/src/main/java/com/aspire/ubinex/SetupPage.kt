@@ -13,6 +13,7 @@ import com.aspire.ubinex.databinding.ActivitySetupPageBinding
 import com.aspire.ubinex.model.UserDataModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.util.Date
 
@@ -20,7 +21,8 @@ class SetupPage : AppCompatActivity() {
 
     private lateinit var binding : ActivitySetupPageBinding
     private lateinit var auth : FirebaseAuth
-    private lateinit var database : FirebaseDatabase
+    private lateinit var realTimeDB : FirebaseDatabase
+    private lateinit var fireStoreDB : FirebaseFirestore
     private lateinit var storage : FirebaseStorage
     private lateinit var setupImageUri : Uri
     private lateinit var gendertype : String
@@ -30,7 +32,8 @@ class SetupPage : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
+        realTimeDB = FirebaseDatabase.getInstance()
+        fireStoreDB = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
 
         val gender = listOf("Gender", "Male", "Female", "transgender", "Others")
@@ -82,30 +85,37 @@ class SetupPage : AppCompatActivity() {
                 if (setupImageUri != null) {
                     binding.loadingBg.visibility = View.VISIBLE
                     binding.progressBar.visibility = View.VISIBLE
-                    val reference = storage.reference.child("ProfilePics")
-                        .child(auth.currentUser!!.uid)
-                    reference.putFile(setupImageUri).addOnCompleteListener { task ->
+                    val storageReference = storage.reference.child("ProfilePics").child(auth.currentUser!!.uid)
+                    storageReference.putFile(setupImageUri).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            reference.downloadUrl.addOnCompleteListener { uri ->
-                                val imageUrl = uri.toString()
-                                val uid = auth.currentUser!!.uid
-                                val phone = auth.currentUser!!.phoneNumber
-                                val username = binding.setupUsernameEdt.text.toString()
-                                val email = binding.setupEmailEdt.text.toString()
-                                val user = UserDataModel(uid, username, phone, imageUrl,gendertype, email)
+                            storageReference.downloadUrl.addOnCompleteListener { uriTask ->
+                                if (uriTask.isSuccessful) {
+                                    val imageUrl = uriTask.result.toString()
+                                    val uid = auth.currentUser!!.uid
+                                    val phone = auth.currentUser!!.phoneNumber
+                                    val username = binding.setupUsernameEdt.text.toString()
+                                    val email = binding.setupEmailEdt.text.toString()
+                                    val user = UserDataModel(uid, username, phone, imageUrl, gendertype, email)
 
-                                database.reference
-                                    .child("users")
-                                    .child(uid)
-                                    .setValue(user)
-                                    .addOnCompleteListener{
-                                        val intent  = Intent(this@SetupPage,MainActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-                                    }
+                                    fireStoreDB.collection("users").document(uid).set(user)
+                                        .addOnCompleteListener { firestoreTask ->
+                                            if (firestoreTask.isSuccessful) {
+                                                val intent = Intent(this@SetupPage, MainActivity::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            } else {
+                                                Toast.makeText(this@SetupPage, "Error adding document: ${firestoreTask.exception?.message}", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                } else {
+                                    Toast.makeText(this@SetupPage, "Error getting download URL: ${uriTask.exception?.message}", Toast.LENGTH_SHORT).show()
+                                }
                             }
+                        } else {
+                            Toast.makeText(this@SetupPage, "Error uploading image: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                         }
                     }
+
                 } else {
                     Toast.makeText(this, "Please select a Image", Toast.LENGTH_SHORT).show()
                     binding.loadingBg.visibility = View.GONE
@@ -118,30 +128,33 @@ class SetupPage : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(data != null){
-            if(data.data != null){
-                val uri = data.data //file Path
-                val storage = FirebaseStorage.getInstance()
-                val time = Date().time
-                val reference = storage.reference
-                    .child("ProfilePics")
-                    .child(time.toString()+"")
-                reference.putFile(uri!!).addOnCompleteListener{task ->
-                    if(task.isSuccessful){
-                        reference.downloadUrl.addOnCompleteListener { uri ->
-                            val filePath = uri.toString()
-                            val obj = HashMap<String,Any>()
-                            obj["image"] = filePath
-                            database.reference
-                                .child("users")
-                                .child(FirebaseAuth.getInstance().uid!!)
-                                .updateChildren(obj).addOnSuccessListener {  }
+        if (data != null && data.data != null) {
+            val uri = data.data // File URI
+            val time = Date().time
+            val storageReference = storage.reference
+                .child("ProfilePics")
+                .child(time.toString() + "")
+
+            storageReference.putFile(uri!!).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    storageReference.downloadUrl.addOnCompleteListener { uriTask ->
+                        if (uriTask.isSuccessful) {
+                            //val imageUrl = uriTask.result.toString()
+                            // Set selected image in ImageView
+                            binding.setupImage.setImageURI(data.data)
+                            setupImageUri = data.data!!
+                        } else {
+                            // Error getting download URL
+                            Toast.makeText(this@SetupPage, "Error getting download URL: ${uriTask.exception?.message}", Toast.LENGTH_SHORT).show()
                         }
                     }
+                } else {
+                    // Error uploading image
+                    Toast.makeText(this@SetupPage, "Error uploading image: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
-                binding.setupImage.setImageURI(data.data)
-                setupImageUri = data.data!!
             }
         }
     }
+
+
 }

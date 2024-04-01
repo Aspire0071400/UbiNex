@@ -129,10 +129,12 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:backgroundTint="@color/teal_main"
+        android:elevation="50dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/loading_bg"
         app:layout_constraintEnd_toEndOf="@+id/loading_bg"
         app:layout_constraintStart_toStartOf="@+id/loading_bg"
         app:layout_constraintTop_toTopOf="@+id/loading_bg" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
