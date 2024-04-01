@@ -73,14 +73,16 @@ class SetupPage : AppCompatActivity() {
 
         binding.saveSetupProfile.setOnClickListener {
             val name = binding.setupUsernameEdt.text.toString().trim()
-            if (gendertype == ""){
-                Toast.makeText(this,"Please select a Gender",Toast.LENGTH_SHORT).show()
-            }
-            if(name.isEmpty()){
-                binding.setupUsernameEdt.error = "Username can't be empty"
+//            if (gendertype == ""){
+//                Toast.makeText(this,"Please select a Gender",Toast.LENGTH_SHORT).show()
+//            }
+            if(name.isBlank() and binding.setupEmailEdt.text.toString().isBlank() and gendertype.isBlank()){
+                Toast.makeText(this,"Fields can't be empty", Toast.LENGTH_SHORT).show()
             }else {
                 if (setupImageUri != null) {
-                    val reference = storage.reference.child("profile")
+                    binding.loadingBg.visibility = View.VISIBLE
+                    binding.progressBar.visibility = View.VISIBLE
+                    val reference = storage.reference.child("ProfilePics")
                         .child(auth.currentUser!!.uid)
                     reference.putFile(setupImageUri).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
@@ -89,7 +91,8 @@ class SetupPage : AppCompatActivity() {
                                 val uid = auth.currentUser!!.uid
                                 val phone = auth.currentUser!!.phoneNumber
                                 val username = binding.setupUsernameEdt.text.toString()
-                                val user = UserDataModel(uid, username, phone, imageUrl,gendertype)
+                                val email = binding.setupEmailEdt.text.toString()
+                                val user = UserDataModel(uid, username, phone, imageUrl,gendertype, email)
 
                                 database.reference
                                     .child("users")
@@ -105,6 +108,8 @@ class SetupPage : AppCompatActivity() {
                     }
                 } else {
                     Toast.makeText(this, "Please select a Image", Toast.LENGTH_SHORT).show()
+                    binding.loadingBg.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
                 }
             }
         }
@@ -119,7 +124,7 @@ class SetupPage : AppCompatActivity() {
                 val storage = FirebaseStorage.getInstance()
                 val time = Date().time
                 val reference = storage.reference
-                    .child("Profile")
+                    .child("ProfilePics")
                     .child(time.toString()+"")
                 reference.putFile(uri!!).addOnCompleteListener{task ->
                     if(task.isSuccessful){
