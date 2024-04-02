@@ -60,8 +60,6 @@ class Login : AppCompatActivity() {
                     .build()
 
                 PhoneAuthProvider.verifyPhoneNumber(options)
-
-                Toast.makeText(applicationContext, "$phoneNumberForOTP" ,Toast.LENGTH_SHORT).show()
             }
         }
     }

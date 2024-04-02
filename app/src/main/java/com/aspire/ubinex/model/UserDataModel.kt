@@ -8,5 +8,6 @@ class UserDataModel(
     var gender : String?,
     var email : String?
 ) {
+    constructor() : this(null, null, null, null, null, null)
 
 }
