@@ -30,7 +30,7 @@ class SetupPage : AppCompatActivity() {
     private lateinit var storage: FirebaseStorage
     private lateinit var setupImageUri: Uri
     private lateinit var genderType: String
-    private lateinit var userData: UserDataModel
+    private var userData: UserDataModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +84,7 @@ class SetupPage : AppCompatActivity() {
                     val storageReference = storage.reference.child("ProfilePics").child(auth.currentUser!!.uid)
 
                     // Check if the selected image URI is different from the existing profile image URI
-                    if (setupImageUri.toString() != userData.profileImage) {
+                    if (setupImageUri.toString() != (userData?.profileImage ?: "")) {
                         storageReference.putFile(setupImageUri).addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 storageReference.downloadUrl.addOnCompleteListener { uriTask ->
@@ -147,18 +147,18 @@ class SetupPage : AppCompatActivity() {
         if (currentUser != null) {
             fireStoreDB.collection("users").document(currentUser).get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    userData = task.result.toObject(UserDataModel::class.java)!!
+                    userData = task.result.toObject(UserDataModel::class.java)
                     if (userData != null) {
-                        binding.setupUsernameEdt.setText(userData.name)
-                        binding.setupEmailEdt.setText(userData.email)
-                        userData.gender?.let { gender ->
+                        binding.setupUsernameEdt.setText(userData!!.name)
+                        binding.setupEmailEdt.setText(userData!!.email)
+                        userData?.gender?.let { gender ->
                             val genderIndex = genders.indexOf(gender)
                             if (genderIndex != 0) {
                                 binding.genderSpinner.setSelection(genderIndex)
                             }
                         }
-                        Glide.with(this).load(userData.profileImage).into(binding.setupImage)
-                        setupImageUri = Uri.parse(userData.profileImage)
+                        Glide.with(this).load(userData!!.profileImage).into(binding.setupImage)
+                        setupImageUri = Uri.parse(userData!!.profileImage)
                     }
                 } else {
                     Log.e(TAG, "Error fetching user data: ${task.exception?.message}")

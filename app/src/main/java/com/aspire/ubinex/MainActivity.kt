@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         val pagerAdapter = MyPagerAdapter(supportFragmentManager)
         binding.viewPager.adapter = pagerAdapter
 
-        //replaceFragment(MessageFragment())
+        //replaceFragment(com.aspire.ubinex.fragments.MessageFragment())
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.message -> binding.viewPager.currentItem = 0
