@@ -1,11 +1,13 @@
 package com.aspire.ubinex.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.aspire.ubinex.R
+import com.aspire.ubinex.SoloChatActivity
 import com.aspire.ubinex.databinding.UserListItemLayoutBinding
 import com.aspire.ubinex.model.UserDataModel
 import com.bumptech.glide.Glide
@@ -28,7 +30,13 @@ class UserListAdapter (var context : Context, var userList : ArrayList<UserDataM
         val user = userList[position]
         holder.binding.itemUserName.text = user.name
         Glide.with(context).load(user.profileImage).placeholder(R.drawable.place_holder).into(holder.binding.itemUserImage)
-
+        holder.itemView.setOnClickListener {
+            val i = Intent(context,SoloChatActivity::class.java)
+            i.putExtra("name",user.name)
+            i.putExtra("image",user.profileImage)
+            i.putExtra("uid",user.uid)
+            context.startActivity(i)
+        }
     }
 
 }
