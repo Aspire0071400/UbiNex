@@ -15,6 +15,9 @@
         android:theme="@style/Theme.UbiNex"
         tools:targetApi="31">
         <activity
+            android:name=".SoloChatActivity"
+            android:exported="false" />
+        <activity
             android:name=".SetupPage"
             android:exported="false" />
         <activity
