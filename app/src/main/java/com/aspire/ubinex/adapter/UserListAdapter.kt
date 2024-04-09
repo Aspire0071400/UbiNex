@@ -31,7 +31,7 @@ class UserListAdapter (var context : Context, var userList : ArrayList<UserDataM
         holder.binding.itemUserName.text = user.name
         Glide.with(context).load(user.profileImage).placeholder(R.drawable.place_holder).into(holder.binding.itemUserImage)
         holder.itemView.setOnClickListener {
-            val i = Intent(context,SoloChatActivity::class.java)
+            val i = Intent(context, SoloChatActivity::class.java)
             i.putExtra("name",user.name)
             i.putExtra("image",user.profileImage)
             i.putExtra("uid",user.uid)

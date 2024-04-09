@@ -1,6 +1,8 @@
 package com.aspire.ubinex
 
 import android.os.Bundle
+import android.os.Handler
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -8,16 +10,21 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.navigation.NavController
 import androidx.viewpager.widget.ViewPager
 import com.aspire.ubinex.databinding.ActivityMainBinding
 import com.aspire.ubinex.fragments.AccountFragment
 import com.aspire.ubinex.fragments.MessageFragment
 import com.aspire.ubinex.fragments.MusicFragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
+    private lateinit var userStatusRef: DatabaseReference
+    private lateinit var auth : FirebaseAuth
+    private var doubleBackToExitPressedOnce = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +36,9 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        auth = FirebaseAuth.getInstance()
+        userStatusRef = FirebaseDatabase.getInstance().reference.child("user_status")
+
         val pagerAdapter = MyPagerAdapter(supportFragmentManager)
         binding.viewPager.adapter = pagerAdapter
 
@@ -81,5 +91,59 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+
+        val currentUserID = auth.currentUser?.uid ?: return
+        val userStatusMap = HashMap<String, Any>()
+        userStatusMap["status"] = "offline"
+        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val currentUserID = auth.currentUser?.uid ?: return
+        val userStatusMap = HashMap<String, Any>()
+        userStatusMap["status"] = "active"
+        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val currentUserID = auth.currentUser?.uid ?: return
+        val userStatusMap = HashMap<String, Any>()
+        userStatusMap["status"] = "offline"
+        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+    }
+
+    override fun onBackPressed() {
+        // Get the current fragment
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.view_pager)
+
+
+        if (currentFragment is MessageFragment || currentFragment is MusicFragment || currentFragment is AccountFragment) {
+
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed()
+                onDestroy()
+                finish()
+                return
+            }
+
+            this.doubleBackToExitPressedOnce = true
+            Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
+
+
+            Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 4000)
+        } else {
+            // Call super to handle the back press normally for other fragments
+            super.onBackPressed()
+        }
+    }
+
+
 
 }
