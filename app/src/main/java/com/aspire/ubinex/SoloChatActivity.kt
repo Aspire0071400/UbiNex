@@ -22,7 +22,7 @@ class SoloChatActivity : AppCompatActivity() {
     private lateinit var chatAdapter : ChatAdapter
     private lateinit var messageList : ArrayList<ChatModel>
     private lateinit var auth : FirebaseAuth
-    private lateinit var firestoreDb : FirebaseFirestore
+    private lateinit var fireStoreDb : FirebaseFirestore
     private lateinit var dbRef : DatabaseReference
     private var isKeyboardVisible = false
     private lateinit var userStatusRef: DatabaseReference
@@ -38,7 +38,7 @@ class SoloChatActivity : AppCompatActivity() {
         chatAdapter = ChatAdapter(binding.soloChatRecycler, messageList)
 
         auth = FirebaseAuth.getInstance()
-        firestoreDb = FirebaseFirestore.getInstance()
+        fireStoreDb = FirebaseFirestore.getInstance()
         dbRef = FirebaseDatabase.getInstance().reference
 
         setContentView(binding.root)
@@ -46,7 +46,8 @@ class SoloChatActivity : AppCompatActivity() {
         userStatusRef = FirebaseDatabase.getInstance().reference.child("user_status")
 
         binding.soloChatBackBtn.setOnClickListener { finish() }
-        binding.soloChatEmoji.setOnClickListener {
+
+        binding.soloChatKeyboardHandler.setOnClickListener {
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             if (isKeyboardVisible) {
                 imm.hideSoftInputFromWindow(binding.soloChatMessageField.windowToken, 0)
@@ -119,7 +120,7 @@ class SoloChatActivity : AppCompatActivity() {
                     binding.soloChatCurrentStatus.text = when (status) {
                         "online" -> "Online"
                         "offline" -> "Offline"
-                        "active" -> "active"
+                        "active" -> "Active"
                         else -> "Unknown"
                     }
                 }
@@ -132,41 +133,50 @@ class SoloChatActivity : AppCompatActivity() {
 
 
     override fun onPause() {
-        super.onPause()
-
-        val currentUserID = auth.currentUser?.uid ?: return
-        val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "offline"
-        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-
         val currentUserID = auth.currentUser?.uid ?: return
         val userStatusMap = HashMap<String, Any>()
         userStatusMap["status"] = "online"
         userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        super.onPause()
+
+
+    }
+
+    override fun onResume() {
+        val currentUserID = auth.currentUser?.uid ?: return
+        val userStatusMap = HashMap<String, Any>()
+        userStatusMap["status"] = "active"
+        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        super.onResume()
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
         val currentUserID = auth.currentUser?.uid ?: return
         val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "active"
+        userStatusMap["status"] = "online"
         userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        super.onBackPressed()
         finish()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun finish() {
         val currentUserID = auth.currentUser?.uid ?: return
         val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "active"
+        userStatusMap["status"] = "online"
         userStatusRef.child(currentUserID).updateChildren(userStatusMap)
-        userStatusRef.removeEventListener(userStatusListener)
+        super.finish()
     }
+
+
+
+//    override fun onDestroy() {
+//        val currentUserID = auth.currentUser?.uid ?: return
+//        val userStatusMap = HashMap<String, Any>()
+//        userStatusMap["status"] = "offline"
+//        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+//        userStatusRef.removeEventListener(userStatusListener)
+//        super.onDestroy()
+//    }
 
 //    override fun onStop() {
 //        super.onStop()

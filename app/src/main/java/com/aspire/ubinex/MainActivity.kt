@@ -92,31 +92,39 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-
-        val currentUserID = auth.currentUser?.uid ?: return
-        val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "offline"
-        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        val currentUserID = auth.currentUser?.uid ?: return
-        val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "active"
-        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
-    }
+//    override fun onPause() {
+//        val currentUserID = auth.currentUser?.uid ?: return
+//        val userStatusMap = HashMap<String, Any>()
+//        userStatusMap["status"] = "online"
+//        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+//
+//        super.onPause()
+//
+//    }
+//
+//    override fun onResume() {
+//        val currentUserID = auth.currentUser?.uid ?: return
+//        val userStatusMap = HashMap<String, Any>()
+//        userStatusMap["status"] = "online"
+//        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+//
+//        super.onResume()
+//    }
 
     override fun onDestroy() {
-        super.onDestroy()
         val currentUserID = auth.currentUser?.uid ?: return
         val userStatusMap = HashMap<String, Any>()
         userStatusMap["status"] = "offline"
         userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        super.onDestroy()
+    }
+
+    override fun finish() {
+        val currentUserID = auth.currentUser?.uid ?: return
+        val userStatusMap = HashMap<String, Any>()
+        userStatusMap["status"] = "offline"
+        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        super.finish()
     }
 
     override fun onBackPressed() {
@@ -127,6 +135,12 @@ class MainActivity : AppCompatActivity() {
         if (currentFragment is MessageFragment || currentFragment is MusicFragment || currentFragment is AccountFragment) {
 
             if (doubleBackToExitPressedOnce) {
+
+                val currentUserID = auth.currentUser?.uid ?: return
+                val userStatusMap = HashMap<String, Any>()
+                userStatusMap["status"] = "offline"
+                userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+
                 super.onBackPressed()
                 onDestroy()
                 finish()

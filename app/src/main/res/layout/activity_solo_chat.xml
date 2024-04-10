@@ -145,7 +145,7 @@
                     android:maxHeight="100dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/solo_chat_share_attachment"
-                    app:layout_constraintStart_toEndOf="@+id/solo_chat_emoji"
+                    app:layout_constraintStart_toEndOf="@+id/solo_chat_keyboard_handler"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
@@ -171,7 +171,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
-                    android:id="@+id/solo_chat_emoji"
+                    android:id="@+id/solo_chat_keyboard_handler"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"

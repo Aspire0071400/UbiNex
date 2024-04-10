@@ -9,6 +9,8 @@ import com.aspire.ubinex.adapter.UserListAdapter
 import com.aspire.ubinex.databinding.FragmentMessageBinding
 import com.aspire.ubinex.model.UserDataModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MessageFragment : Fragment() {
@@ -16,6 +18,7 @@ class MessageFragment : Fragment() {
     private lateinit var binding: FragmentMessageBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var userStatusRef: DatabaseReference
     private lateinit var users: ArrayList<UserDataModel>
     private var userAdapter: UserListAdapter? = null
     private var currentUser: UserDataModel? = null
@@ -34,6 +37,7 @@ class MessageFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
         users = ArrayList()
+        userStatusRef = FirebaseDatabase.getInstance().reference.child("user_status")
         userAdapter = UserListAdapter(requireContext(), users)
 
         val layoutManager = LinearLayoutManager(context)
@@ -69,15 +73,31 @@ class MessageFragment : Fragment() {
             }
     }
 
-    override fun onResume() {
-        super.onResume()
-        val currentId = auth.uid ?: ""
-        firestore.collection("presence").document(currentId).set(mapOf("status" to "Online"))
+    override fun onDestroy() {
+        val currentUserID = auth.currentUser?.uid ?: return
+        val userStatusMap = HashMap<String, Any>()
+        userStatusMap["status"] = "offline"
+        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        super.onDestroy()
     }
 
-    override fun onPause() {
-        super.onPause()
-        val currentId = auth.uid ?: ""
-        firestore.collection("presence").document(currentId).set(mapOf("status" to "Offline"))
+    override fun onResume() {
+        val currentUserID = auth.currentUser?.uid ?: return
+        val userStatusMap = HashMap<String, Any>()
+        userStatusMap["status"] = "online"
+        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+
+        super.onResume()
     }
+
+//    override fun onDestroyView() {
+//
+//        val currentUserID = auth.currentUser?.uid ?: return
+//        val userStatusMap = HashMap<String, Any>()
+//        userStatusMap["status"] = "offline"
+//        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+//
+//        super.onDestroyView()
+//    }
+
 }

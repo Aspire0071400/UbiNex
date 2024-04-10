@@ -11,12 +11,18 @@ import com.aspire.ubinex.SoloChatActivity
 import com.aspire.ubinex.databinding.UserListItemLayoutBinding
 import com.aspire.ubinex.model.UserDataModel
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class UserListAdapter (var context : Context, var userList : ArrayList<UserDataModel>) :
     RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
+    lateinit var currentReceiverUid : String
+    private lateinit var auth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
 
     inner class UserViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
         val binding : UserListItemLayoutBinding = UserListItemLayoutBinding.bind(itemView)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
@@ -28,6 +34,7 @@ class UserListAdapter (var context : Context, var userList : ArrayList<UserDataM
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         val user = userList[position]
+        currentReceiverUid = user.uid.toString()
         holder.binding.itemUserName.text = user.name
         Glide.with(context).load(user.profileImage).placeholder(R.drawable.place_holder).into(holder.binding.itemUserImage)
         holder.itemView.setOnClickListener {
