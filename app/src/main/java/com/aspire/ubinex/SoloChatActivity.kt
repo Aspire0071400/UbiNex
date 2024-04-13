@@ -4,6 +4,7 @@ import ChatAdapter
 import android.content.Context
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aspire.ubinex.databinding.ActivitySoloChatBinding
@@ -46,6 +47,9 @@ class SoloChatActivity : AppCompatActivity() {
         val receiverUid = intent.getStringExtra("uid").toString()
         val senderUid = auth.currentUser!!.uid
 
+        binding.soloChatReceiverUserName.text = name
+        Glide.with(this).load(imageUrl).into(binding.soloChatReceiverImage)
+
         senderRoom = receiverUid + senderUid
         receiverRoom = senderUid + receiverUid
 
@@ -54,6 +58,8 @@ class SoloChatActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         userStatusRef = FirebaseDatabase.getInstance().reference.child("user_status")
+        val senderLastMessageRef = FirebaseDatabase.getInstance().reference.child("last_messages").child(senderUid)
+        val receiverLastMessageRef = FirebaseDatabase.getInstance().reference.child("last_messages").child(receiverUid)
 
         binding.soloChatBackBtn.setOnClickListener { finish() }
 
@@ -69,12 +75,7 @@ class SoloChatActivity : AppCompatActivity() {
             }
         }
 
-
-
-        binding.soloChatReceiverUserName.text = name
-        Glide.with(this).load(imageUrl).into(binding.soloChatReceiverImage)
-
-        binding.soloChatRecycler.layoutManager = LinearLayoutManager(this)
+        binding.soloChatRecycler.layoutManager = LinearLayoutManager(this@SoloChatActivity)
         binding.soloChatRecycler.adapter = chatAdapter
 
         dbRef.child("chats").child(senderRoom).child("messages")
@@ -84,6 +85,7 @@ class SoloChatActivity : AppCompatActivity() {
                     for (postSnapshot in snapshot.children) {
                         val message = postSnapshot.getValue(ChatModel::class.java)
                         messageList.add(message!!)
+                        //message.messageId = snapshot.key
                     }
                     chatAdapter.notifyDataSetChanged()
                     chatAdapter.scrollToEnd()
@@ -91,6 +93,7 @@ class SoloChatActivity : AppCompatActivity() {
 
                 override fun onCancelled(error: DatabaseError) {
                     // Handle onCancelled
+                    Toast.makeText(this@SoloChatActivity,"Network Error, check your network!",Toast.LENGTH_SHORT).show()
                 }
             })
 
@@ -109,12 +112,14 @@ class SoloChatActivity : AppCompatActivity() {
                             .push().setValue(messageObject)
                             .addOnSuccessListener {
                                 binding.soloChatMessageField.text = null
+
+
                             }
                     }
             }
         }
 
-        setupUserStatusListener(receiverUid.toString())
+        setupUserStatusListener(receiverUid)
 
     }
 
@@ -173,7 +178,6 @@ class SoloChatActivity : AppCompatActivity() {
         userStatusRef.child(currentUserID).updateChildren(userStatusMap)
         super.finish()
     }
-
 
 
 //    override fun onDestroy() {

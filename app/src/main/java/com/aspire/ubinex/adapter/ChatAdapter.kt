@@ -71,6 +71,8 @@ class ChatAdapter(
             if(currentMsg.message.equals("photo"))
             {   holder.receiveDoc.visibility = View.VISIBLE
                 holder.receiveMsg.visibility = View.GONE
+                Glide.with(context).load(currentMsg.imageUrl).placeholder(R.drawable.doc_place_holder).into(holder.receiveDoc)
+                holder.timestamp.text = formatDate(currentMsg.timeStamp)
             }
 
             holder.receiveMsg.text = currentMsg.message
@@ -122,10 +124,6 @@ class ChatAdapter(
 
         dialog.show()
     }
-
-
-
-
 
     private fun deleteMessageForMe(message: ChatModel, roomId: String) {
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -232,10 +230,6 @@ class ChatAdapter(
             override fun onCancelled(databaseError: DatabaseError) {}
         })
     }
-
-
-
-
 
     inner class SendViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val sendMsg: TextView = itemView.findViewById(R.id.sender_text)
