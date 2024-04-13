@@ -1,6 +1,7 @@
 package com.aspire.ubinex
 
 import ChatAdapter
+import android.content.Context
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
@@ -28,18 +29,27 @@ class SoloChatActivity : AppCompatActivity() {
     private lateinit var userStatusRef: DatabaseReference
     private lateinit var userStatusListener: ValueEventListener
 
-    var receiverRoom : String? = null
-    var senderRoom : String? = null
+    private lateinit var receiverRoom : String
+    private lateinit var senderRoom : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySoloChatBinding.inflate(layoutInflater)
+        val context : Context = this
         messageList = ArrayList()
-        chatAdapter = ChatAdapter(binding.soloChatRecycler, messageList)
-
         auth = FirebaseAuth.getInstance()
         fireStoreDb = FirebaseFirestore.getInstance()
         dbRef = FirebaseDatabase.getInstance().reference
+
+        val name = intent.getStringExtra("name")
+        val imageUrl = intent.getStringExtra("image")
+        val receiverUid = intent.getStringExtra("uid").toString()
+        val senderUid = auth.currentUser!!.uid
+
+        senderRoom = receiverUid + senderUid
+        receiverRoom = senderUid + receiverUid
+
+        chatAdapter = ChatAdapter(context,binding.soloChatRecycler, messageList,senderRoom,receiverRoom)
 
         setContentView(binding.root)
 
@@ -59,13 +69,7 @@ class SoloChatActivity : AppCompatActivity() {
             }
         }
 
-        val name = intent.getStringExtra("name")
-        val imageUrl = intent.getStringExtra("image")
-        val receiverUid = intent.getStringExtra("uid")
-        val senderUid = auth.currentUser!!.uid
 
-        senderRoom = receiverUid + senderUid
-        receiverRoom = senderUid + receiverUid
 
         binding.soloChatReceiverUserName.text = name
         Glide.with(this).load(imageUrl).into(binding.soloChatReceiverImage)
@@ -73,7 +77,7 @@ class SoloChatActivity : AppCompatActivity() {
         binding.soloChatRecycler.layoutManager = LinearLayoutManager(this)
         binding.soloChatRecycler.adapter = chatAdapter
 
-        dbRef.child("chats").child(senderRoom!!).child("messages")
+        dbRef.child("chats").child(senderRoom).child("messages")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     messageList.clear()
@@ -94,11 +98,14 @@ class SoloChatActivity : AppCompatActivity() {
             if (binding.soloChatMessageField.text.isNotBlank() || binding.soloChatMessageField.text.isNotEmpty()) {
                 val messageText = binding.soloChatMessageField.text.toString()
                 val timestamp = System.currentTimeMillis()
-                val messageObject = ChatModel(message = messageText, senderId = senderUid, timeStamp = timestamp)
+                val messageObject = ChatModel(
+                    message = messageText,
+                    senderId = senderUid,
+                    timeStamp = timestamp)
 
-                dbRef.child("chats").child(senderRoom!!).child("messages")
+                dbRef.child("chats").child(senderRoom).child("messages")
                     .push().setValue(messageObject).addOnSuccessListener {
-                        dbRef.child("chats").child(receiverRoom!!).child("messages")
+                        dbRef.child("chats").child(receiverRoom).child("messages")
                             .push().setValue(messageObject)
                             .addOnSuccessListener {
                                 binding.soloChatMessageField.text = null
