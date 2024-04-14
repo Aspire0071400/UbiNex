@@ -1,12 +1,12 @@
 package com.aspire.ubinex.auth
 
+import com.aspire.ubinex.MainActivity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.aspire.ubinex.MainActivity
 import com.aspire.ubinex.R
 import com.aspire.ubinex.databinding.ActivityLoginBinding
 import com.google.firebase.FirebaseException
@@ -104,7 +104,7 @@ class Login : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         if(auth.currentUser != null){
-            startActivity(Intent(this,MainActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
         }
     }
 }

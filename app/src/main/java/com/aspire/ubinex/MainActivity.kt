@@ -21,9 +21,9 @@ import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     private lateinit var userStatusRef: DatabaseReference
-    private lateinit var auth : FirebaseAuth
+    private lateinit var auth: FirebaseAuth
     private var doubleBackToExitPressedOnce = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,13 +42,13 @@ class MainActivity : AppCompatActivity() {
         val pagerAdapter = MyPagerAdapter(supportFragmentManager)
         binding.viewPager.adapter = pagerAdapter
 
-        //replaceFragment(com.aspire.ubinex.fragments.MessageFragment())
         binding.bottomNavigationView.setOnItemSelectedListener {
-            when(it.itemId){
+            when (it.itemId) {
                 R.id.message -> binding.viewPager.currentItem = 0
                 R.id.music -> binding.viewPager.currentItem = 1
                 R.id.account -> binding.viewPager.currentItem = 2
-                else ->{}
+                else -> {
+                }
             }
             true
         }
@@ -56,7 +56,12 @@ class MainActivity : AppCompatActivity() {
         binding.viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
 
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
 
             override fun onPageSelected(position: Int) {
                 binding.bottomNavigationView.selectedItemId = when (position) {
@@ -67,17 +72,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-
-
-
     }
-
-//    private fun replaceFragment(fragment : Fragment){
-//        val fragmentManager = supportFragmentManager
-//        val fragmentTransaction = fragmentManager.beginTransaction()
-//        fragmentTransaction.replace(R.id.frame,fragment)
-//        fragmentTransaction.commit()
-//    }
 
     private inner class MyPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
         override fun getCount(): Int = 3
@@ -92,72 +87,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    override fun onPause() {
-//        val currentUserID = auth.currentUser?.uid ?: return
-//        val userStatusMap = HashMap<String, Any>()
-//        userStatusMap["status"] = "online"
-//        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
-//
-//        super.onPause()
-//
-//    }
-//
-//    override fun onResume() {
-//        val currentUserID = auth.currentUser?.uid ?: return
-//        val userStatusMap = HashMap<String, Any>()
-//        userStatusMap["status"] = "online"
-//        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
-//
-//        super.onResume()
-//    }
+    override fun onResume() {
+        updateUserStatus("online")
+        super.onResume()
+    }
+
+    override fun onPause() {
+        updateUserStatus("offline")
+        super.onPause()
+    }
 
     override fun onDestroy() {
-        val currentUserID = auth.currentUser?.uid ?: return
-        val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "offline"
-        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        updateUserStatus("offline")
         super.onDestroy()
     }
 
     override fun finish() {
-        val currentUserID = auth.currentUser?.uid ?: return
-        val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "offline"
-        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        updateUserStatus("offline")
         super.finish()
     }
 
+    private fun updateUserStatus(status: String) {
+        val currentUserID = auth.currentUser?.uid ?: return
+        val userStatusMap = hashMapOf<String, Any>("status" to status)
+        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+    }
+
     override fun onBackPressed() {
-        // Get the current fragment
         val currentFragment = supportFragmentManager.findFragmentById(R.id.view_pager)
-
-
         if (currentFragment is MessageFragment || currentFragment is MusicFragment || currentFragment is AccountFragment) {
-
             if (doubleBackToExitPressedOnce) {
 
-                val currentUserID = auth.currentUser?.uid ?: return
-                val userStatusMap = HashMap<String, Any>()
-                userStatusMap["status"] = "offline"
-                userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+                updateUserStatus("offline")
 
-                super.onBackPressed()
-                onDestroy()
                 finish()
+                onDestroy()
                 return
             }
-
             this.doubleBackToExitPressedOnce = true
             Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
-
-
             Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 4000)
         } else {
-            // Call super to handle the back press normally for other fragments
             super.onBackPressed()
         }
     }
-
-
-
 }

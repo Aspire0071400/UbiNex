@@ -23,12 +23,13 @@ class MessageFragment : Fragment() {
     private var userAdapter: UserListAdapter? = null
     private var currentUser: UserDataModel? = null
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentMessageBinding.inflate(layoutInflater)
+        binding = FragmentMessageBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -44,6 +45,25 @@ class MessageFragment : Fragment() {
         binding.userListRecycler.layoutManager = layoutManager
         binding.userListRecycler.adapter = userAdapter
 
+
+        loadUserData()
+        addSnapshotListener()
+        updateUserStatus("online")
+
+    }
+
+
+    override fun onDestroy() {
+        updateUserStatus("offline")
+        super.onDestroy()
+    }
+
+    override fun onResume() {
+        updateUserStatus("online")
+        super.onResume()
+    }
+
+    private fun addSnapshotListener() {
         val currentUserUid = auth.currentUser?.uid ?: ""
         firestore.collection("users").document(currentUserUid)
             .addSnapshotListener { snapshot, exception ->
@@ -54,6 +74,24 @@ class MessageFragment : Fragment() {
                 if (snapshot != null && snapshot.exists()) {
                     currentUser = snapshot.toObject(UserDataModel::class.java)
                 }
+            }
+    }
+
+    private fun updateUserStatus(status: String) {
+        val currentUserID = auth.currentUser?.uid ?: return
+        val userStatusMap = hashMapOf<String, Any>("status" to status)
+        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+    }
+
+    private fun loadUserData() {
+        val currentUserUid = auth.currentUser?.uid ?: ""
+        firestore.collection("users").document(currentUserUid)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                currentUser = snapshot.toObject(UserDataModel::class.java)
+            }
+            .addOnFailureListener {
+                // Handle Firestore failure
             }
 
         firestore.collection("users")
@@ -73,22 +111,6 @@ class MessageFragment : Fragment() {
             }
     }
 
-    override fun onDestroy() {
-        val currentUserID = auth.currentUser?.uid ?: return
-        val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "offline"
-        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
-        super.onDestroy()
-    }
-
-    override fun onResume() {
-        val currentUserID = auth.currentUser?.uid ?: return
-        val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "online"
-        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
-
-        super.onResume()
-    }
 
 //    override fun onDestroyView() {
 //

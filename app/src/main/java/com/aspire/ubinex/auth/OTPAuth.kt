@@ -1,5 +1,6 @@
 package com.aspire.ubinex.auth
 
+import com.aspire.ubinex.MainActivity
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -7,7 +8,6 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.aspire.ubinex.MainActivity
 import com.aspire.ubinex.R
 import com.aspire.ubinex.SetupPage
 import com.aspire.ubinex.databinding.ActivityOtpauthBinding
@@ -81,7 +81,7 @@ class OTPAuth : AppCompatActivity() {
             userRef.get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
-                        // Existing user found, jump to MainActivity
+                        // Existing user found, jump to com.aspire.ubinex.MainActivity
                         val intent = Intent(this@OTPAuth, MainActivity::class.java)
                         startActivity(intent)
                         finish()

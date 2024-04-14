@@ -5,6 +5,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.aspire.ubinex.R
 import com.aspire.ubinex.SoloChatActivity
@@ -22,8 +23,15 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class UserListAdapter (var context : Context, var userList : ArrayList<UserDataModel>) :
-    RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
+interface UserListListener {
+    fun onPinToggle(user: UserDataModel)
+}
+
+class UserListAdapter(
+    private val context: Context,
+    private val userList: ArrayList<UserDataModel>,
+) : RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
+
     //lateinit var currentReceiverUid : String
     private lateinit var dbRef: DatabaseReference
 
@@ -40,6 +48,8 @@ class UserListAdapter (var context : Context, var userList : ArrayList<UserDataM
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         val user = userList[position]
+        val uid = user.uid ?: return
+
         holder.binding.itemUserName.text = user.name
         Glide.with(context).load(user.profileImage).placeholder(R.drawable.place_holder).into(holder.binding.itemUserImage)
         holder.itemView.setOnClickListener {
@@ -50,11 +60,17 @@ class UserListAdapter (var context : Context, var userList : ArrayList<UserDataM
             context.startActivity(i)
         }
 
+        val name = holder.binding.itemUserName.text
+        holder.itemView.setOnLongClickListener {
+            Toast.makeText(context,"${name}",Toast.LENGTH_SHORT).show()
+            true
+        }
+
         // Fetch last message and user status in real-time
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
         val receiverUid = user.uid ?: ""
         if (currentUserUid.isNotEmpty() && receiverUid.isNotEmpty()) {
-            val dbRef = FirebaseDatabase.getInstance().reference
+            dbRef = FirebaseDatabase.getInstance().reference
             val userStatusRef = FirebaseDatabase.getInstance().reference.child("user_status")
             val senderRoom = "$currentUserUid$receiverUid"
 
