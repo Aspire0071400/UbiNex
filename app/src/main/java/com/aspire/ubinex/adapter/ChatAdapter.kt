@@ -15,6 +15,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.jsibbold.zoomage.ZoomageView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -50,15 +51,26 @@ class ChatAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentMsg = msgList[position]
         if (holder is SendViewHolder) {
-            if(currentMsg.message.equals("photo"))
-            {   holder.sendDoc.visibility = View.VISIBLE
-                holder.sendMsg.visibility = View.GONE
-                Glide.with(context).load(currentMsg.imageUrl).placeholder(R.drawable.doc_place_holder).into(holder.sendDoc)
-                holder.timestamp.text = formatDate(currentMsg.timeStamp)
-            }
+            if(!(currentMsg.message != "-/*photo*/-" && currentMsg.imageUrl == null))
+            {
+                    holder.sendDoc.visibility = View.VISIBLE
+                    holder.sendMsg.visibility = View.GONE
+                    Glide.with(context).load(currentMsg.imageUrl.toString())
+                        .placeholder(R.drawable.doc_place_holder).into(holder.sendDoc)
+                    holder.timestamp.text = formatDate(currentMsg.timeStamp)
 
-            holder.sendMsg.text = currentMsg.message
-            holder.timestamp.text = formatDate(currentMsg.timeStamp)
+                holder.itemView.setOnClickListener {
+                    showImageDialog(currentMsg.imageUrl.toString())
+                }
+
+
+            }else{
+                holder.sendDoc.visibility = View.GONE
+                holder.sendMsg.visibility = View.VISIBLE
+                holder.sendMsg.text = currentMsg.message
+                holder.timestamp.text = formatDate(currentMsg.timeStamp)
+
+            }
 
             holder.itemView.setOnLongClickListener {
 
@@ -67,16 +79,26 @@ class ChatAdapter(
                 true // Consume the long press event
             }
 
+
         } else if (holder is ReceiveViewHolder) {
-            if(currentMsg.message.equals("photo"))
-            {   holder.receiveDoc.visibility = View.VISIBLE
-                holder.receiveMsg.visibility = View.GONE
-                Glide.with(context).load(currentMsg.imageUrl).placeholder(R.drawable.doc_place_holder).into(holder.receiveDoc)
+            if(!(currentMsg.message != "-/*photo*/-" && currentMsg.imageUrl == null))
+            {
+                    holder.receiveDoc.visibility = View.VISIBLE
+                    holder.receiveMsg.visibility = View.GONE
+                    Glide.with(context).load(currentMsg.imageUrl.toString())
+                        .placeholder(R.drawable.doc_place_holder).into(holder.receiveDoc)
+                    holder.timestamp.text = formatDate(currentMsg.timeStamp)
+
+                holder.itemView.setOnClickListener {
+                    showImageDialog(currentMsg.imageUrl.toString())
+                }
+
+            }else {
+                holder.receiveDoc.visibility = View.GONE
+                holder.receiveMsg.visibility = View.VISIBLE
+                holder.receiveMsg.text = currentMsg.message
                 holder.timestamp.text = formatDate(currentMsg.timeStamp)
             }
-
-            holder.receiveMsg.text = currentMsg.message
-            holder.timestamp.text = formatDate(currentMsg.timeStamp)
 
             holder.itemView.setOnLongClickListener {
 
@@ -197,6 +219,7 @@ class ChatAdapter(
                                 .addOnSuccessListener {
                                     // Remove the message from the local list
                                     //msgList.remove(message)
+
                                     notifyDataSetChanged()
                                 }
                             break // Stop looping after finding the message
@@ -235,12 +258,14 @@ class ChatAdapter(
         val sendMsg: TextView = itemView.findViewById(R.id.sender_text)
         val timestamp: TextView = itemView.findViewById(R.id.sender_text_time)
         val sendDoc : ImageView = itemView.findViewById(R.id.sender_doc)
+
     }
 
     inner class ReceiveViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val receiveMsg: TextView = itemView.findViewById(R.id.receiver_text)
         val timestamp: TextView = itemView.findViewById(R.id.receiver_text_time)
         val receiveDoc : ImageView = itemView.findViewById(R.id.receiver_doc)
+
     }
 
     private fun formatDate(timestamp: Long?): String {
@@ -266,4 +291,15 @@ class ChatAdapter(
         }
     }
 
+    private fun showImageDialog(imageUrl: String) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.image_dialog_layout)
+        val imageView: ZoomageView = dialog.findViewById(R.id.image_preview)
+        Glide.with(context)
+            .load(imageUrl)
+            .placeholder(R.drawable.doc_place_holder)
+            .into(imageView)
+        dialog.show()
+
+    }
 }

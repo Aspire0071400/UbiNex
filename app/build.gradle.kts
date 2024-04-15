@@ -51,6 +51,8 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+    implementation("com.jsibbold:zoomage:1.3.1")
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
 

@@ -2,7 +2,11 @@ package com.aspire.ubinex
 
 import ChatAdapter
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -17,9 +21,11 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 class SoloChatActivity : AppCompatActivity() {
 
+    private lateinit var senderUid: String
     private lateinit var binding : ActivitySoloChatBinding
     private lateinit var chatAdapter : ChatAdapter
     private lateinit var messageList : ArrayList<ChatModel>
@@ -29,7 +35,7 @@ class SoloChatActivity : AppCompatActivity() {
     private var isKeyboardVisible = false
     private lateinit var userStatusRef: DatabaseReference
     private lateinit var userStatusListener: ValueEventListener
-
+    private lateinit var storage : FirebaseStorage
     private lateinit var receiverRoom : String
     private lateinit var senderRoom : String
 
@@ -41,11 +47,12 @@ class SoloChatActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         fireStoreDb = FirebaseFirestore.getInstance()
         dbRef = FirebaseDatabase.getInstance().reference
+        storage = FirebaseStorage.getInstance()
 
         val name = intent.getStringExtra("name")
         val imageUrl = intent.getStringExtra("image")
         val receiverUid = intent.getStringExtra("uid").toString()
-        val senderUid = auth.currentUser!!.uid
+        senderUid = auth.currentUser!!.uid
 
         binding.soloChatReceiverUserName.text = name
         Glide.with(this).load(imageUrl).into(binding.soloChatReceiverImage)
@@ -67,10 +74,12 @@ class SoloChatActivity : AppCompatActivity() {
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             if (isKeyboardVisible) {
                 imm.hideSoftInputFromWindow(binding.soloChatMessageField.windowToken, 0)
+                binding.soloChatMessageField.clearFocus()
                 isKeyboardVisible = false
             } else {
                 binding.soloChatMessageField.requestFocus()
                 imm.showSoftInput(binding.soloChatMessageField, InputMethodManager.SHOW_IMPLICIT)
+                binding.soloChatMessageField.requestFocus()
                 isKeyboardVisible = true
             }
         }
@@ -113,14 +122,94 @@ class SoloChatActivity : AppCompatActivity() {
                             .addOnSuccessListener {
                                 binding.soloChatMessageField.text = null
 
-
+                                binding.soloChatMessageField.clearFocus()
                             }
                     }
             }
         }
 
-        setupUserStatusListener(receiverUid)
 
+        binding.soloChatShareAttachment.setOnClickListener {
+
+            val intent = Intent()
+            intent.action = Intent.ACTION_GET_CONTENT
+            intent.type = "image/*"
+            startActivityForResult(intent,25)
+
+        }
+
+        val handler = Handler()
+        binding.soloChatMessageField.addTextChangedListener (object  : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { }
+
+            override fun afterTextChanged(s: Editable?) {
+
+                val currentUserID = auth.currentUser?.uid ?: return
+                val userStatusMap = HashMap<String, Any>()
+                userStatusMap["status"] = "typing..."
+                userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+
+                handler.removeCallbacksAndMessages(null)
+                handler.postDelayed(userStoppedTyping,2000)
+            }
+
+            var userStoppedTyping = Runnable {
+                val currentUserID = auth.currentUser?.uid ?: return@Runnable
+                val userStatusMap = HashMap<String, Any>()
+                userStatusMap["status"] = "active"
+                userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+            }
+        })
+
+        setupUserStatusListener(receiverUid)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == 25){
+            if(data != null && data.data != null){
+                val selectedImageUri = data.data
+                val time = System.currentTimeMillis()
+                val storageRef = storage.reference.child("chats").child(senderRoom)
+                    .child(time.toString()+"")
+
+                if (selectedImageUri != null) {
+                    storageRef.putFile(selectedImageUri).addOnCompleteListener{ task->
+                        if(task.isComplete){
+                            storageRef.downloadUrl.addOnCompleteListener { _ImageUri->
+                                val filePath = _ImageUri.result.toString()
+                                val messageTxt : String = "-/*photo*/-"
+                                val timestamp = System.currentTimeMillis()
+                                val messageWithImageObject = ChatModel(
+                                    message = messageTxt,
+                                    senderId = senderUid,
+                                    timeStamp = timestamp,
+                                    imageUrl = filePath)
+                                binding.soloChatMessageField.setText(" ")
+
+                                dbRef.child("chats").child(senderRoom).child("messages")
+                                    .push().setValue(messageWithImageObject).addOnSuccessListener {
+                                        dbRef.child("chats").child(receiverRoom).child("messages")
+                                            .push().setValue(messageWithImageObject)
+                                            .addOnSuccessListener {
+                                                binding.soloChatMessageField.text = null
+                                                Toast.makeText(this,"Image uploaded successfully",Toast.LENGTH_SHORT).show()
+
+                                            }
+                                    }
+
+                            }
+
+                        }else{
+                            Toast.makeText(this,"Image upload Failed",Toast.LENGTH_SHORT).show()
+                        }
+
+                    }
+                }
+            }
+        }
     }
 
     private fun setupUserStatusListener(receiverUid: String) {
@@ -133,6 +222,7 @@ class SoloChatActivity : AppCompatActivity() {
                         "online" -> "Online"
                         "offline" -> "Offline"
                         "active" -> "Active"
+                        "typing..." -> "Typing..."
                         else -> "Unknown"
                     }
                 }

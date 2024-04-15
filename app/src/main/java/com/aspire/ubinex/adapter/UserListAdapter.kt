@@ -23,10 +23,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-interface UserListListener {
-    fun onPinToggle(user: UserDataModel)
-}
-
 class UserListAdapter(
     private val context: Context,
     private val userList: ArrayList<UserDataModel>,
