@@ -1,6 +1,7 @@
-
+package com.aspire.ubinex.adapter
 import android.app.Dialog
 import android.content.Context
+import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -79,11 +80,15 @@ class ChatAdapter(
                 holder.sendMsgView.visibility = View.VISIBLE
                 holder.sendMsg.text = currentMsg.message
                 holder.timestamp.text = formatDate(currentMsg.timeStamp)
+
+                Linkify.addLinks(holder.sendMsg,Linkify.ALL)
             }
 
-            holder.itemView.setOnLongClickListener {
-                showDeleteOptionsDialog(msgList[position],senderRoomId,receiverRoomId)
-                true
+            if(currentMsg.message != "This message is deleted") {
+                holder.itemView.setOnLongClickListener {
+                    showDeleteOptionsDialog(msgList[position], senderRoomId, receiverRoomId)
+                    true
+                }
             }
 
 
@@ -114,11 +119,15 @@ class ChatAdapter(
                 holder.receiveMsgView.visibility = View.VISIBLE
                 holder.receiveMsg.text = currentMsg.message
                 holder.timestamp.text = formatDate(currentMsg.timeStamp)
+
+                Linkify.addLinks(holder.receiveMsg,Linkify.ALL)
             }
 
-            holder.itemView.setOnLongClickListener {
-                showDeleteOptionsDialog(msgList[position],senderRoomId,receiverRoomId)
-                true
+            if(currentMsg.message != "This message is deleted") {
+                holder.itemView.setOnLongClickListener {
+                    showDeleteOptionsDialog(msgList[position], senderRoomId, receiverRoomId)
+                    true
+                }
             }
 
         }
@@ -126,10 +135,13 @@ class ChatAdapter(
 
     private fun showDeleteOptionsDialog(message: ChatModel, senderRoom: String, receiverRoom: String) {
         val dialog = Dialog(recyclerView.context)
-        dialog.setContentView(R.layout.delete_options_layout)
+        dialog.setContentView(R.layout.options_menu_layout)
 
         val delForMeOption = dialog.findViewById<TextView>(R.id.del_for_me)
         val delForEveryoneOption = dialog.findViewById<TextView>(R.id.del_every)
+        val delForEveryoneOptionDivider = dialog.findViewById<View>(R.id.divider)
+        val replyOption = dialog.findViewById<TextView>(R.id.reply)
+        val cancelOption = dialog.findViewById<TextView>(R.id.cancel)
 
         // Check if the current user is the sender of the message
         if (FirebaseAuth.getInstance().currentUser!!.uid == message.senderId) {
@@ -148,15 +160,18 @@ class ChatAdapter(
             // If the current user is the receiver, show only the "Delete for Me" option
             delForMeOption.visibility = View.VISIBLE
             delForEveryoneOption.visibility = View.GONE
+            delForEveryoneOptionDivider.visibility = View.GONE
             delForMeOption.setOnClickListener {
                 deleteMessageForMe(message, senderRoom)
                 dialog.dismiss()
             }
         }
 
-        dialog.findViewById<TextView>(R.id.cancel).setOnClickListener {
+        cancelOption.setOnClickListener {
             dialog.dismiss()
         }
+
+        //replyOption.setOnClickListener { dialog.dismiss() }
 
         dialog.show()
     }

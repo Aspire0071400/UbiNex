@@ -1,6 +1,5 @@
 package com.aspire.ubinex
 
-import ChatAdapter
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.aspire.ubinex.adapter.ChatAdapter
 import com.aspire.ubinex.databinding.ActivitySoloChatBinding
 import com.aspire.ubinex.model.ChatModel
 import com.bumptech.glide.Glide
@@ -84,23 +84,6 @@ class SoloChatActivity : AppCompatActivity() {
         binding.soloChatRecycler.layoutManager = LinearLayoutManager(this@SoloChatActivity)
         binding.soloChatRecycler.adapter = chatAdapter
 
-//        dbRef.child("chats").child(senderRoom).child("messages")
-//            .addValueEventListener(object : ValueEventListener {
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    messageList.clear()
-//                    for (postSnapshot in snapshot.children) {
-//                        val message = postSnapshot.getValue(ChatModel::class.java)
-//                        messageList.add(message!!)
-//                    }
-//                    chatAdapter.notifyDataSetChanged()
-//                    chatAdapter.scrollToEnd()
-//                }
-//
-//                override fun onCancelled(error: DatabaseError) {
-//                    Toast.makeText(this@SoloChatActivity, "Network Error, check your network!", Toast.LENGTH_SHORT)
-//                        .show()
-//                }
-//            })
         dbRef.child("chats").child(senderRoom).child("messages")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
