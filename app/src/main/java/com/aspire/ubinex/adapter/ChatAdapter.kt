@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.aspire.ubinex.R
 import com.aspire.ubinex.model.ChatModel
@@ -53,24 +54,34 @@ class ChatAdapter(
         if (holder is SendViewHolder) {
             if(!(currentMsg.message != "-/*photo*/-" && currentMsg.imageUrl == null))
             {
-                    holder.sendDoc.visibility = View.VISIBLE
-                    holder.sendMsg.visibility = View.GONE
-                    Glide.with(context).load(currentMsg.imageUrl.toString())
+                holder.sendDoc.visibility = View.VISIBLE
+                holder.sendDocView.visibility = View.VISIBLE
+                holder.sendMsg.visibility = View.GONE
+                holder.sendMsgView.visibility = View.GONE
+                Glide.with(context).load(currentMsg.imageUrl.toString())
                         .placeholder(R.drawable.doc_place_holder).into(holder.sendDoc)
-                    holder.timestamp.text = formatDate(currentMsg.timeStamp)
+                holder.timestamp.text = formatDate(currentMsg.timeStamp)
 
-                holder.itemView.setOnClickListener {
+                holder.sendDoc.setOnClickListener {
                     showImageDialog(currentMsg.imageUrl.toString())
+                }
+
+                holder.sendDoc.setOnLongClickListener {
+                    showDeleteOptionsDialog(msgList[position],senderRoomId,receiverRoomId)
+                    true
                 }
 
 
             }else{
                 holder.sendDoc.visibility = View.GONE
+                holder.sendDocView.visibility = View.GONE
                 holder.sendMsg.visibility = View.VISIBLE
+                holder.sendMsgView.visibility = View.VISIBLE
                 holder.sendMsg.text = currentMsg.message
                 holder.timestamp.text = formatDate(currentMsg.timeStamp)
 
             }
+
 
             holder.itemView.setOnLongClickListener {
 
@@ -83,19 +94,28 @@ class ChatAdapter(
         } else if (holder is ReceiveViewHolder) {
             if(!(currentMsg.message != "-/*photo*/-" && currentMsg.imageUrl == null))
             {
-                    holder.receiveDoc.visibility = View.VISIBLE
-                    holder.receiveMsg.visibility = View.GONE
-                    Glide.with(context).load(currentMsg.imageUrl.toString())
+                holder.receiveDoc.visibility = View.VISIBLE
+                holder.receiveDocView.visibility = View.VISIBLE
+                holder.receiveMsg.visibility = View.GONE
+                holder.receiveMsgView.visibility = View.GONE
+                Glide.with(context).load(currentMsg.imageUrl.toString())
                         .placeholder(R.drawable.doc_place_holder).into(holder.receiveDoc)
-                    holder.timestamp.text = formatDate(currentMsg.timeStamp)
+                holder.timestamp.text = formatDate(currentMsg.timeStamp)
 
-                holder.itemView.setOnClickListener {
+                holder.receiveDoc.setOnClickListener {
                     showImageDialog(currentMsg.imageUrl.toString())
+                }
+
+                holder.receiveDoc.setOnLongClickListener {
+                    showDeleteOptionsDialog(msgList[position],senderRoomId,receiverRoomId)
+                    true
                 }
 
             }else {
                 holder.receiveDoc.visibility = View.GONE
+                holder.receiveDocView.visibility = View.GONE
                 holder.receiveMsg.visibility = View.VISIBLE
+                holder.receiveMsgView.visibility = View.VISIBLE
                 holder.receiveMsg.text = currentMsg.message
                 holder.timestamp.text = formatDate(currentMsg.timeStamp)
             }
@@ -256,15 +276,19 @@ class ChatAdapter(
 
     inner class SendViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val sendMsg: TextView = itemView.findViewById(R.id.sender_text)
+        val sendMsgView: CardView = itemView.findViewById(R.id.cardViewSend)
         val timestamp: TextView = itemView.findViewById(R.id.sender_text_time)
         val sendDoc : ImageView = itemView.findViewById(R.id.sender_doc)
+        val sendDocView : CardView = itemView.findViewById(R.id.cardViewSendImage)
 
     }
 
     inner class ReceiveViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val receiveMsg: TextView = itemView.findViewById(R.id.receiver_text)
+        val receiveMsgView: CardView = itemView.findViewById(R.id.cardViewReceive)
         val timestamp: TextView = itemView.findViewById(R.id.receiver_text_time)
         val receiveDoc : ImageView = itemView.findViewById(R.id.receiver_doc)
+        val receiveDocView : CardView = itemView.findViewById(R.id.cardViewReceiveImage)
 
     }
 
