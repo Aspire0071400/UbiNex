@@ -79,15 +79,11 @@ class ChatAdapter(
                 holder.sendMsgView.visibility = View.VISIBLE
                 holder.sendMsg.text = currentMsg.message
                 holder.timestamp.text = formatDate(currentMsg.timeStamp)
-
             }
 
-
             holder.itemView.setOnLongClickListener {
-
                 showDeleteOptionsDialog(msgList[position],senderRoomId,receiverRoomId)
-
-                true // Consume the long press event
+                true
             }
 
 
@@ -121,10 +117,8 @@ class ChatAdapter(
             }
 
             holder.itemView.setOnLongClickListener {
-
                 showDeleteOptionsDialog(msgList[position],senderRoomId,receiverRoomId)
-
-                true // Consume the long press event
+                true
             }
 
         }
@@ -298,13 +292,10 @@ class ChatAdapter(
         val currentDate = Date()
         val diff = (currentDate.time - date.time) / (1000 * 60 * 60 * 24)
 
-        return if (diff >= 2) {
-            val dayFormat = SimpleDateFormat("dd MMMM", Locale.getDefault())
-            dayFormat.format(date)
-        } else if (diff == 1L) {
-            "Yesterday"
-        } else {
-            sdf.format(date)
+        return when {
+            diff >= 2 -> SimpleDateFormat("dd MMMM", Locale.getDefault()).format(date)
+            diff == 1L -> "Yesterday"
+            else -> sdf.format(date)
         }
     }
 
@@ -324,6 +315,5 @@ class ChatAdapter(
             .placeholder(R.drawable.doc_place_holder)
             .into(imageView)
         dialog.show()
-
     }
 }

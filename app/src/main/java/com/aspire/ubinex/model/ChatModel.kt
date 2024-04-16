@@ -5,7 +5,7 @@ data class ChatModel(
     var message: String? = null,
     var senderId: String? = null,
     var imageUrl: String? = null,
-    var timeStamp: Long? = 0
+    var timeStamp: Long? = 0,
 ) {
     constructor(message: String?, senderId: String?, timeStamp: Long?) : this() {
         this.message = message

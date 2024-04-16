@@ -34,7 +34,6 @@ class SoloChatActivity : AppCompatActivity() {
     private lateinit var dbRef : DatabaseReference
     private var isKeyboardVisible = false
     private lateinit var userStatusRef: DatabaseReference
-    private lateinit var userStatusListener: ValueEventListener
     private lateinit var storage : FirebaseStorage
     private lateinit var receiverRoom : String
     private lateinit var senderRoom : String
@@ -57,16 +56,14 @@ class SoloChatActivity : AppCompatActivity() {
         binding.soloChatReceiverUserName.text = name
         Glide.with(this).load(imageUrl).into(binding.soloChatReceiverImage)
 
-        senderRoom = receiverUid + senderUid
-        receiverRoom = senderUid + receiverUid
+        senderRoom = "$receiverUid$senderUid"
+        receiverRoom = "$senderUid$receiverUid"
 
         chatAdapter = ChatAdapter(context,binding.soloChatRecycler, messageList,senderRoom,receiverRoom)
 
         setContentView(binding.root)
 
         userStatusRef = FirebaseDatabase.getInstance().reference.child("user_status")
-        val senderLastMessageRef = FirebaseDatabase.getInstance().reference.child("last_messages").child(senderUid)
-        val receiverLastMessageRef = FirebaseDatabase.getInstance().reference.child("last_messages").child(receiverUid)
 
         binding.soloChatBackBtn.setOnClickListener { finish() }
 
@@ -87,33 +84,52 @@ class SoloChatActivity : AppCompatActivity() {
         binding.soloChatRecycler.layoutManager = LinearLayoutManager(this@SoloChatActivity)
         binding.soloChatRecycler.adapter = chatAdapter
 
+//        dbRef.child("chats").child(senderRoom).child("messages")
+//            .addValueEventListener(object : ValueEventListener {
+//                override fun onDataChange(snapshot: DataSnapshot) {
+//                    messageList.clear()
+//                    for (postSnapshot in snapshot.children) {
+//                        val message = postSnapshot.getValue(ChatModel::class.java)
+//                        messageList.add(message!!)
+//                    }
+//                    chatAdapter.notifyDataSetChanged()
+//                    chatAdapter.scrollToEnd()
+//                }
+//
+//                override fun onCancelled(error: DatabaseError) {
+//                    Toast.makeText(this@SoloChatActivity, "Network Error, check your network!", Toast.LENGTH_SHORT)
+//                        .show()
+//                }
+//            })
         dbRef.child("chats").child(senderRoom).child("messages")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    messageList.clear()
+                    val list = ArrayList<ChatModel>()
                     for (postSnapshot in snapshot.children) {
                         val message = postSnapshot.getValue(ChatModel::class.java)
-                        messageList.add(message!!)
-                        //message.messageId = snapshot.key
+                        message?.let { list.add(it) }
                     }
+                    messageList.clear()
+                    messageList.addAll(list)
                     chatAdapter.notifyDataSetChanged()
                     chatAdapter.scrollToEnd()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // Handle onCancelled
-                    Toast.makeText(this@SoloChatActivity,"Network Error, check your network!",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@SoloChatActivity, "Network Error, check your network!", Toast.LENGTH_SHORT)
+                        .show()
                 }
             })
 
         binding.soloChatSend.setOnClickListener {
-            if (binding.soloChatMessageField.text.isNotBlank() || binding.soloChatMessageField.text.isNotEmpty()) {
-                val messageText = binding.soloChatMessageField.text.toString()
+            val messageText = binding.soloChatMessageField.text.toString()
+            if (messageText.isNotBlank()) {
                 val timestamp = System.currentTimeMillis()
                 val messageObject = ChatModel(
                     message = messageText,
                     senderId = senderUid,
-                    timeStamp = timestamp)
+                    timeStamp = timestamp
+                )
 
                 dbRef.child("chats").child(senderRoom).child("messages")
                     .push().setValue(messageObject).addOnSuccessListener {
@@ -121,7 +137,6 @@ class SoloChatActivity : AppCompatActivity() {
                             .push().setValue(messageObject)
                             .addOnSuccessListener {
                                 binding.soloChatMessageField.text = null
-
                                 binding.soloChatMessageField.clearFocus()
                             }
                     }
@@ -130,35 +145,30 @@ class SoloChatActivity : AppCompatActivity() {
 
 
         binding.soloChatShareAttachment.setOnClickListener {
-
             val intent = Intent()
             intent.action = Intent.ACTION_GET_CONTENT
             intent.type = "image/*"
             startActivityForResult(intent,25)
-
         }
 
         val handler = Handler()
-        binding.soloChatMessageField.addTextChangedListener (object  : TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+        binding.soloChatMessageField.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
             override fun afterTextChanged(s: Editable?) {
-
                 val currentUserID = auth.currentUser?.uid ?: return
-                val userStatusMap = HashMap<String, Any>()
-                userStatusMap["status"] = "typing..."
+                val userStatusMap = hashMapOf<String, Any>("status" to "typing...")
                 userStatusRef.child(currentUserID).updateChildren(userStatusMap)
 
                 handler.removeCallbacksAndMessages(null)
-                handler.postDelayed(userStoppedTyping,2000)
+                handler.postDelayed(userStoppedTyping, 2000)
             }
 
-            var userStoppedTyping = Runnable {
+            private val userStoppedTyping = Runnable {
                 val currentUserID = auth.currentUser?.uid ?: return@Runnable
-                val userStatusMap = HashMap<String, Any>()
-                userStatusMap["status"] = "active"
+                val userStatusMap = hashMapOf<String, Any>("status" to "active")
                 userStatusRef.child(currentUserID).updateChildren(userStatusMap)
             }
         })
@@ -172,12 +182,12 @@ class SoloChatActivity : AppCompatActivity() {
             if(data != null && data.data != null){
                 val selectedImageUri = data.data
                 val time = System.currentTimeMillis()
-                val storageRef = storage.reference.child("chats").child(senderRoom)
+                val storageRef = FirebaseStorage.getInstance().reference.child("chats").child(senderRoom)
                     .child(time.toString()+"")
 
-                if (selectedImageUri != null) {
-                    storageRef.putFile(selectedImageUri).addOnCompleteListener{ task->
-                        if(task.isComplete){
+                selectedImageUri?.let {
+                    storageRef.putFile(it).addOnCompleteListener{ task->
+                        if(task.isSuccessful){
                             storageRef.downloadUrl.addOnCompleteListener { _ImageUri->
                                 val filePath = _ImageUri.result.toString()
                                 val messageTxt : String = "-/*photo*/-"
@@ -189,19 +199,16 @@ class SoloChatActivity : AppCompatActivity() {
                                     imageUrl = filePath)
                                 binding.soloChatMessageField.setText(" ")
 
-                                dbRef.child("chats").child(senderRoom).child("messages")
-                                    .push().setValue(messageWithImageObject).addOnSuccessListener {
-                                        dbRef.child("chats").child(receiverRoom).child("messages")
-                                            .push().setValue(messageWithImageObject)
-                                            .addOnSuccessListener {
-                                                binding.soloChatMessageField.text = null
-                                                Toast.makeText(this,"Image uploaded successfully",Toast.LENGTH_SHORT).show()
+                                val senderMessageRef = dbRef.child("chats").child(senderRoom).child("messages").push()
+                                val receiverMessageRef = dbRef.child("chats").child(receiverRoom).child("messages").push()
 
-                                            }
+                                senderMessageRef.setValue(messageWithImageObject).addOnSuccessListener {
+                                    receiverMessageRef.setValue(messageWithImageObject).addOnSuccessListener {
+                                        binding.soloChatMessageField.text = null
+                                        Toast.makeText(this,"Image uploaded successfully",Toast.LENGTH_SHORT).show()
                                     }
-
+                                }
                             }
-
                         }else{
                             Toast.makeText(this,"Image upload Failed",Toast.LENGTH_SHORT).show()
                         }
@@ -213,11 +220,10 @@ class SoloChatActivity : AppCompatActivity() {
     }
 
     private fun setupUserStatusListener(receiverUid: String) {
-        userStatusListener = userStatusRef.child(receiverUid)
+        userStatusRef.child(receiverUid)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val status = snapshot.child("status").value?.toString()
-                    // Update status TextView in the toolbar
                     binding.soloChatCurrentStatus.text = when (status) {
                         "online" -> "Online"
                         "offline" -> "Offline"
@@ -227,65 +233,38 @@ class SoloChatActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                    // Handle onCancelled
-                }
+                override fun onCancelled(error: DatabaseError) {}
             })
     }
 
+    private fun updateUserStatus(status: String) {
+        val currentUserID = auth.currentUser?.uid ?: return
+        val userStatusMap = hashMapOf<String, Any>("status" to status)
+        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+    }
 
     override fun onPause() {
-        val currentUserID = auth.currentUser?.uid ?: return
-        val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "online"
-        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        updateUserStatus("online")
         super.onPause()
 
 
     }
 
     override fun onResume() {
-        val currentUserID = auth.currentUser?.uid ?: return
-        val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "active"
-        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        updateUserStatus("active")
         super.onResume()
     }
 
     override fun onBackPressed() {
-        val currentUserID = auth.currentUser?.uid ?: return
-        val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "online"
-        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        updateUserStatus("online")
         super.onBackPressed()
         finish()
     }
 
     override fun finish() {
-        val currentUserID = auth.currentUser?.uid ?: return
-        val userStatusMap = HashMap<String, Any>()
-        userStatusMap["status"] = "online"
-        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
+        updateUserStatus("online")
         super.finish()
     }
 
-
-//    override fun onDestroy() {
-//        val currentUserID = auth.currentUser?.uid ?: return
-//        val userStatusMap = HashMap<String, Any>()
-//        userStatusMap["status"] = "offline"
-//        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
-//        userStatusRef.removeEventListener(userStatusListener)
-//        super.onDestroy()
-//    }
-
-//    override fun onStop() {
-//        super.onStop()
-//        // Set user status to "offline" when the activity is stopped
-//        val currentUserID = auth.currentUser?.uid ?: return
-//        val userStatusMap = HashMap<String, Any>()
-//        userStatusMap["status"] = "offline"
-//        userStatusRef.child(currentUserID).updateChildren(userStatusMap)
-//    }
 
 }

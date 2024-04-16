@@ -65,7 +65,6 @@
             android:background="@color/link_blue"
             android:padding="5dp">
 
-
             <ImageView
                 android:id="@+id/receiver_doc"
                 android:layout_width="200dp"
