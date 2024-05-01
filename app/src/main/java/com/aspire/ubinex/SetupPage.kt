@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.aspire.ubinex.databinding.ActivitySetupPageBinding
 import com.aspire.ubinex.model.UserDataModel
+import com.aspire.ubinex.utils.PermissionHandler
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -67,10 +68,12 @@ class SetupPage : AppCompatActivity() {
         getExistingUserData()
 
         binding.setupImage.setOnClickListener {
-            val intent = Intent()
-            intent.action = Intent.ACTION_GET_CONTENT
-            intent.type = "image/*"
-            startActivityForResult(intent, 45)
+
+            if(PermissionHandler.hasCameraPermission(this)){
+                openGallery()
+            }else{
+                PermissionHandler.requestCameraPermission(this)
+            }
         }
 
         binding.saveSetupProfile.setOnClickListener {
@@ -193,5 +196,26 @@ class SetupPage : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        PermissionHandler.handlePermissionsResult(requestCode, grantResults,
+            onSuccess = {
+                // Permission granted, proceed with gallery opening
+                openGallery()
+            },
+            onFailure = {
+                // Permission denied
+                Toast.makeText(this, "Camera permission is required to select an image.", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
+    private fun openGallery() {
+        val intent = Intent()
+        intent.action = Intent.ACTION_GET_CONTENT
+        intent.type = "image/*"
+        startActivityForResult(intent, 45)
     }
 }

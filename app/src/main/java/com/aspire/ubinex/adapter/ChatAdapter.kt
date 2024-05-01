@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aspire.ubinex.R
 import com.aspire.ubinex.model.ChatModel
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -59,8 +62,14 @@ class ChatAdapter(
                 holder.sendDocView.visibility = View.VISIBLE
                 holder.sendMsg.visibility = View.GONE
                 holder.sendMsgView.visibility = View.GONE
-                Glide.with(context).load(currentMsg.imageUrl.toString())
-                        .placeholder(R.drawable.doc_place_holder).into(holder.sendDoc)
+                Glide.with(context)
+                    //.asBitmap()
+                    .load(currentMsg.imageUrl.toString())
+                    //.apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.DATA))
+                    //.transition(BitmapTransitionOptions.withCrossFade())
+                    .placeholder(R.drawable.doc_place_holder)
+                    .into(holder.sendDoc)
+
                 holder.timestamp.text = formatDate(currentMsg.timeStamp)
 
                 holder.sendDoc.setOnClickListener {
@@ -99,8 +108,14 @@ class ChatAdapter(
                 holder.receiveDocView.visibility = View.VISIBLE
                 holder.receiveMsg.visibility = View.GONE
                 holder.receiveMsgView.visibility = View.GONE
-                Glide.with(context).load(currentMsg.imageUrl.toString())
-                        .placeholder(R.drawable.doc_place_holder).into(holder.receiveDoc)
+                Glide.with(context)
+                   // .asBitmap()
+                    .load(currentMsg.imageUrl.toString())
+                   // .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.DATA))
+                   // .transition(BitmapTransitionOptions.withCrossFade())
+                    .placeholder(R.drawable.doc_place_holder)
+                    .into(holder.receiveDoc)
+
                 holder.timestamp.text = formatDate(currentMsg.timeStamp)
 
                 holder.receiveDoc.setOnClickListener {
@@ -131,6 +146,19 @@ class ChatAdapter(
             }
 
         }
+    }
+
+    private fun showImageDialog(imageUrl: String) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.image_dialog_layout)
+        val imageView: ZoomageView = dialog.findViewById(R.id.image_preview)
+        Glide.with(context)
+            //.asBitmap()
+            .load(imageUrl)
+            //.apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.DATA))
+            // .transition(BitmapTransitionOptions.withCrossFade())
+            .into(imageView)
+        dialog.show()
     }
 
     private fun showDeleteOptionsDialog(message: ChatModel, senderRoom: String, receiverRoom: String) {
@@ -175,6 +203,7 @@ class ChatAdapter(
 
         dialog.show()
     }
+
 
     private fun deleteMessageForMe(message: ChatModel, roomId: String) {
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -223,7 +252,6 @@ class ChatAdapter(
             }
         })
     }
-
 
     private fun deleteMessageForEveryone(message: ChatModel, senderRoom: String, receiverRoom: String) {
         val delObject = ChatModel("This message is deleted", message.senderId, message.timeStamp)
@@ -288,8 +316,8 @@ class ChatAdapter(
         val sendMsgView: CardView = itemView.findViewById(R.id.cardViewSend)
         val timestamp: TextView = itemView.findViewById(R.id.sender_text_time)
         val sendDoc : ImageView = itemView.findViewById(R.id.sender_doc)
-        val sendDocView : CardView = itemView.findViewById(R.id.cardViewSendImage)
 
+        val sendDocView : CardView = itemView.findViewById(R.id.cardViewSendImage)
     }
 
     inner class ReceiveViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -297,8 +325,8 @@ class ChatAdapter(
         val receiveMsgView: CardView = itemView.findViewById(R.id.cardViewReceive)
         val timestamp: TextView = itemView.findViewById(R.id.receiver_text_time)
         val receiveDoc : ImageView = itemView.findViewById(R.id.receiver_doc)
-        val receiveDocView : CardView = itemView.findViewById(R.id.cardViewReceiveImage)
 
+        val receiveDocView : CardView = itemView.findViewById(R.id.cardViewReceiveImage)
     }
 
     private fun formatDate(timestamp: Long?): String {
@@ -319,16 +347,5 @@ class ChatAdapter(
         if (lastItemPosition >= 0) {
             recyclerView.scrollToPosition(lastItemPosition)
         }
-    }
-
-    private fun showImageDialog(imageUrl: String) {
-        val dialog = Dialog(context)
-        dialog.setContentView(R.layout.image_dialog_layout)
-        val imageView: ZoomageView = dialog.findViewById(R.id.image_preview)
-        Glide.with(context)
-            .load(imageUrl)
-            .placeholder(R.drawable.doc_place_holder)
-            .into(imageView)
-        dialog.show()
     }
 }

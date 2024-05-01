@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:background="@color/white"
+    android:background="#D1C4E9"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SoloChatActivity">
@@ -69,11 +69,23 @@
         app:layout_constraintStart_toStartOf="@+id/toolbar"
         app:layout_constraintTop_toTopOf="@+id/toolbar" />
 
+    <ImageButton
+        android:id="@+id/solo_chat_send"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/transparent"
+        android:elevation="40dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/send_button"
+        app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/materialCardView" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/solo_chat_recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#D1C4E9"
         app:layout_constraintBottom_toTopOf="@+id/materialCardView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -81,14 +93,17 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginBottom="8dp"
         android:backgroundTint="@color/transparent"
         android:maxHeight="70dp"
         android:minHeight="50dp"
+        app:cardCornerRadius="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/solo_chat_send"
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -96,27 +111,14 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/transparent">
 
-            <ImageButton
-                android:id="@+id/solo_chat_send"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:background="@color/transparent"
-                android:elevation="40dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/send_button"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="8dp"
                 android:background="@drawable/button_background"
                 android:backgroundTint="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/solo_chat_send"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -142,18 +144,18 @@
                     android:id="@+id/solo_chat_share_attachment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="16dp"
                     android:background="@color/transparent"
                     android:src="@drawable/baseline_attach_file_24"
-                    app:layout_constraintBottom_toBottomOf="@+id/solo_chat_share_camera"
-                    app:layout_constraintEnd_toStartOf="@+id/solo_chat_share_camera"
-                    app:layout_constraintTop_toTopOf="@+id/solo_chat_share_camera" />
+                    app:layout_constraintBottom_toBottomOf="@+id/solo_chat_camera"
+                    app:layout_constraintEnd_toStartOf="@+id/solo_chat_camera"
+                    app:layout_constraintTop_toTopOf="@+id/solo_chat_camera" />
 
                 <ImageButton
-                    android:id="@+id/solo_chat_share_camera"
+                    android:id="@+id/solo_chat_camera"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="16dp"
                     android:background="@color/transparent"
                     android:src="@drawable/baseline_camera_alt_24"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -162,9 +164,9 @@
 
                 <ImageButton
                     android:id="@+id/solo_chat_keyboard_handler"
-                    android:layout_width="40dp"
+                    android:layout_width="35dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="4dp"
                     android:background="@color/transparent"
                     android:src="@drawable/baseline_keyboard_24"
                     app:layout_constraintBottom_toBottomOf="parent"
