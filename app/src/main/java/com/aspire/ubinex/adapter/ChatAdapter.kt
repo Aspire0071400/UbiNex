@@ -1,4 +1,5 @@
 package com.aspire.ubinex.adapter
+
 import android.app.Dialog
 import android.content.Context
 import android.text.util.Linkify
@@ -12,9 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aspire.ubinex.R
 import com.aspire.ubinex.model.ChatModel
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
-import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -34,16 +32,22 @@ class ChatAdapter(
 )
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val ITEM_RECEIVE = 1
-    private val ITEM_SENT = 2
+    companion object {
+        private const val ITEM_RECEIVE = 1
+        private const val ITEM_SENT = 2
+    }
 
     var senderRoomId = senderRoom
     var receiverRoomId = receiverRoom
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val layoutResId = if (viewType == ITEM_RECEIVE) R.layout.receive_text_layout else R.layout.send_text_layout
-        val view = LayoutInflater.from(parent.context).inflate(layoutResId, parent, false)
-        return if (viewType == ITEM_RECEIVE) ReceiveViewHolder(view) else SendViewHolder(view)
+        return if (viewType == ITEM_SENT) {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.send_text_layout, parent, false)
+            SendViewHolder(view)
+        } else {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.receive_text_layout, parent, false)
+            ReceiveViewHolder(view)
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -55,96 +59,74 @@ class ChatAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentMsg = msgList[position]
-        if (holder is SendViewHolder) {
-            if(!(currentMsg.message != "-/*photo*/-" && currentMsg.imageUrl == null))
-            {
-                holder.sendDoc.visibility = View.VISIBLE
-                holder.sendDocView.visibility = View.VISIBLE
-                holder.sendMsg.visibility = View.GONE
-                holder.sendMsgView.visibility = View.GONE
-                Glide.with(context)
-                    //.asBitmap()
-                    .load(currentMsg.imageUrl.toString())
-                    //.apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.DATA))
-                    //.transition(BitmapTransitionOptions.withCrossFade())
-                    .placeholder(R.drawable.doc_place_holder)
-                    .into(holder.sendDoc)
 
-                holder.timestamp.text = formatDate(currentMsg.timeStamp)
+        when (holder) {
+            is SendViewHolder -> {
+                if (currentMsg.message == "-/*photo*/-" && currentMsg.imageUrl != null) {
+                    holder.sendMsg.visibility = View.GONE
+                    holder.sendDoc.visibility = View.VISIBLE
+                    holder.sendDocView.visibility = View.VISIBLE
+                    holder.sendMsgView.visibility = View.GONE
+                    Glide.with(context)
+                        .load(currentMsg.imageUrl)
+                        .placeholder(R.drawable.doc_place_holder)
+                        .into(holder.sendDoc)
 
-                holder.sendDoc.setOnClickListener {
-                    showImageDialog(currentMsg.imageUrl.toString())
+                    holder.sendDoc.setOnClickListener {
+                        showImageDialog(currentMsg.imageUrl!!)
+                    }
+
+                } else {
+                    holder.sendMsg.visibility = View.VISIBLE
+                    holder.sendDoc.visibility = View.GONE
+                    holder.sendMsg.text = currentMsg.message
+                    holder.sendMsgView.visibility = View.VISIBLE
+                    Linkify.addLinks(holder.sendMsg, Linkify.ALL)
                 }
 
+                holder.sendMsg.setOnLongClickListener {
+                    showDeleteOptionsDialog(msgList[position] , senderRoomId, receiverRoomId)
+                    true
+                }
                 holder.sendDoc.setOnLongClickListener {
-                    showDeleteOptionsDialog(msgList[position],senderRoomId,receiverRoomId)
+                    showDeleteOptionsDialog(msgList[position] , senderRoomId, receiverRoomId)
                     true
                 }
-
-
-            }else{
-                holder.sendDoc.visibility = View.GONE
-                holder.sendDocView.visibility = View.GONE
-                holder.sendMsg.visibility = View.VISIBLE
-                holder.sendMsgView.visibility = View.VISIBLE
-                holder.sendMsg.text = currentMsg.message
                 holder.timestamp.text = formatDate(currentMsg.timeStamp)
-
-                Linkify.addLinks(holder.sendMsg,Linkify.ALL)
             }
+            is ReceiveViewHolder -> {
+                if (currentMsg.message == "-/*photo*/-" && currentMsg.imageUrl != null) {
+                    holder.receiveMsg.visibility = View.GONE
+                    holder.receiveMsgView.visibility = View.GONE
+                    holder.receiveDoc.visibility = View.VISIBLE
+                    holder.receiveDocView.visibility = View.VISIBLE
+                    Glide.with(context)
+                        .load(currentMsg.imageUrl)
+                        .placeholder(R.drawable.doc_place_holder)
+                        .into(holder.receiveDoc)
 
-            if(currentMsg.message != "This message is deleted") {
-                holder.itemView.setOnLongClickListener {
-                    showDeleteOptionsDialog(msgList[position], senderRoomId, receiverRoomId)
-                    true
+                    holder.receiveDoc.setOnClickListener {
+                        showImageDialog(currentMsg.imageUrl!!)
+                    }
+                } else {
+                    holder.receiveMsg.visibility = View.VISIBLE
+                    holder.receiveDoc.visibility = View.GONE
+                    holder.receiveMsgView.visibility = View.VISIBLE
+                    holder.receiveMsg.text = currentMsg.message
+                    Linkify.addLinks(holder.receiveMsg, Linkify.ALL)
                 }
-            }
-
-
-        } else if (holder is ReceiveViewHolder) {
-            if(!(currentMsg.message != "-/*photo*/-" && currentMsg.imageUrl == null))
-            {
-                holder.receiveDoc.visibility = View.VISIBLE
-                holder.receiveDocView.visibility = View.VISIBLE
-                holder.receiveMsg.visibility = View.GONE
-                holder.receiveMsgView.visibility = View.GONE
-                Glide.with(context)
-                   // .asBitmap()
-                    .load(currentMsg.imageUrl.toString())
-                   // .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.DATA))
-                   // .transition(BitmapTransitionOptions.withCrossFade())
-                    .placeholder(R.drawable.doc_place_holder)
-                    .into(holder.receiveDoc)
 
                 holder.timestamp.text = formatDate(currentMsg.timeStamp)
 
-                holder.receiveDoc.setOnClickListener {
-                    showImageDialog(currentMsg.imageUrl.toString())
+                holder.receiveMsg.setOnLongClickListener {
+                    showDeleteOptionsDialog(msgList[position] , senderRoomId, receiverRoomId)
+                    true
                 }
-
                 holder.receiveDoc.setOnLongClickListener {
-                    showDeleteOptionsDialog(msgList[position],senderRoomId,receiverRoomId)
-                    true
-                }
-
-            }else {
-                holder.receiveDoc.visibility = View.GONE
-                holder.receiveDocView.visibility = View.GONE
-                holder.receiveMsg.visibility = View.VISIBLE
-                holder.receiveMsgView.visibility = View.VISIBLE
-                holder.receiveMsg.text = currentMsg.message
-                holder.timestamp.text = formatDate(currentMsg.timeStamp)
-
-                Linkify.addLinks(holder.receiveMsg,Linkify.ALL)
-            }
-
-            if(currentMsg.message != "This message is deleted") {
-                holder.itemView.setOnLongClickListener {
                     showDeleteOptionsDialog(msgList[position], senderRoomId, receiverRoomId)
                     true
                 }
             }
-
         }
     }
 
@@ -209,10 +191,21 @@ class ChatAdapter(
         val currentUser = FirebaseAuth.getInstance().currentUser
         val currentUserId = currentUser?.uid
 
+        var delObject = ChatModel("This message is deleted", message.senderId, message.timeStamp)
+        when (message.message) {
+            "-/*photo*/-" -> {
+                delObject = ChatModel("This media is deleted", message.senderId, message.timeStamp)
+            }
+            "This media is deleted" -> {
+                delObject = ChatModel("This media is deleted", message.senderId, message.timeStamp)
+            }
+            "This message is deleted" -> {
+                delObject = ChatModel("This message is deleted", message.senderId, message.timeStamp)
+            }
+        }
+
         // Check if the current user is the sender of the message
         val isSender = message.senderId == currentUserId
-
-        val delObject = ChatModel("This message is deleted", message.senderId, message.timeStamp)
 
         val roomRef = FirebaseDatabase.getInstance().reference.child("chats").child(roomId).child("messages")
 
@@ -254,7 +247,18 @@ class ChatAdapter(
     }
 
     private fun deleteMessageForEveryone(message: ChatModel, senderRoom: String, receiverRoom: String) {
-        val delObject = ChatModel("This message is deleted", message.senderId, message.timeStamp)
+        var delObject = ChatModel("This message is deleted", message.senderId, message.timeStamp)
+        when (message.message) {
+            "-/*photo*/-" -> {
+                delObject = ChatModel("This media is deleted", message.senderId, message.timeStamp)
+            }
+            "This media is deleted" -> {
+                delObject = ChatModel("This media is deleted", message.senderId, message.timeStamp)
+            }
+            "This message is deleted" -> {
+                delObject = ChatModel("This message is deleted", message.senderId, message.timeStamp)
+            }
+        }
 
         val senderRef = FirebaseDatabase.getInstance().reference.child("chats")
             .child(senderRoom).child("messages")
