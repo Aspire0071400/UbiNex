@@ -3,7 +3,6 @@ package com.aspire.ubinex
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -11,11 +10,15 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aspire.ubinex.adapter.ChatAdapter
 import com.aspire.ubinex.databinding.ActivitySoloChatBinding
 import com.aspire.ubinex.model.ChatModel
+import com.aspire.ubinex.utils.CameraActivity
+import com.aspire.ubinex.utils.PermissionHandler
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -41,8 +44,8 @@ class SoloChatActivity : AppCompatActivity() {
     private lateinit var receiverRoom : String
     private lateinit var senderRoom : String
     private val REQUEST_IMAGE_PICK = 25
-    private val CAMERA_PERMISSION_REQUEST_CODE = 100
-    //private val STORAGE_PERMISSION_REQUEST_CODE = 200
+    private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
+    private lateinit var resultValue : String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +57,8 @@ class SoloChatActivity : AppCompatActivity() {
         fireStoreDb = FirebaseFirestore.getInstance()
         dbRef = FirebaseDatabase.getInstance().reference
         storage = FirebaseStorage.getInstance()
+
+        cameraLauncher = registerCameraLauncher()
 
         val name = intent.getStringExtra("name")
         val imageUrl = intent.getStringExtra("image")
@@ -135,11 +140,19 @@ class SoloChatActivity : AppCompatActivity() {
 
 
         binding.soloChatShareAttachment.setOnClickListener {
-           openGallery()
+            if(PermissionHandler.checkStoragePermissions(this)){
+                openGallery()
+            }else{
+                PermissionHandler.requestStoragePermissions(this)
+            }
         }
 
         binding.soloChatCamera.setOnClickListener {
-            requestPermissions(arrayOf("android.permission.CAMERA"),CAMERA_PERMISSION_REQUEST_CODE)
+            if (PermissionHandler.checkCameraPermissions(this)) {
+                cameraLauncher.launch(CameraActivity.createIntent(this))
+            } else {
+                PermissionHandler.requestCameraPermissions(this)
+            }
         }
 
         val handler = Handler()
@@ -173,6 +186,20 @@ class SoloChatActivity : AppCompatActivity() {
         if (requestCode == REQUEST_IMAGE_PICK) {
             if (resultCode == Activity.RESULT_OK) {
                 handleImagePickResult(data)
+            }
+        }
+    }
+
+    private fun registerCameraLauncher(): ActivityResultLauncher<Intent> {
+        return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+
+                resultValue = result.data?.getStringExtra("capturedUri").toString()
+
+                Toast.makeText(this, "Image capture success successfully $resultValue", Toast.LENGTH_SHORT).show()
+                val uri = Uri.parse(resultValue)
+                uploadImageToStorage(uri)
+                Toast.makeText(this, "$uri", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -217,22 +244,6 @@ class SoloChatActivity : AppCompatActivity() {
         val selectedImageUri = data?.data
         selectedImageUri?.let { uri ->
             uploadImageToStorage(uri)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if(requestCode == 100){
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this, "CAMERA Permission granted", Toast.LENGTH_SHORT).show()
-            }else{
-                Toast.makeText(this, "CAMERA Permission denied", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
