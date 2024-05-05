@@ -236,7 +236,7 @@ class SoloChatActivity : AppCompatActivity() {
                     .push().setValue(message)
                     .addOnSuccessListener {
                         binding.soloChatMessageField.text = null
-                        Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
                     }
             }
     }
