@@ -90,6 +90,7 @@ class CameraActivity :AppCompatActivity(){
             Toast.makeText(this,"$resultIntent dgdsghj  $currentUri",Toast.LENGTH_LONG).show()
             setResult(RESULT_OK,resultIntent)
             finish()
+
         }
 
         binding.retakeBtn.setOnClickListener {
