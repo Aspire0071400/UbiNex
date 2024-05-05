@@ -5,6 +5,7 @@
     android:id="@+id/camera_preview_layout"
     android:layout_width="match_parent"
     android:background="@color/black"
+    tools:context=".utils.CameraActivity"
     android:layout_height="match_parent">
 
 
@@ -12,31 +13,21 @@
         android:id="@+id/previewView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/capture_shutter"
+        android:layout_marginBottom="164dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/flash_btn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="end"
-            android:scaleType="fitCenter"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:background="@color/transparent"
-            android:src="@drawable/flash_off" />
     </androidx.camera.view.PreviewView>
 
     <ImageButton
         android:id="@+id/flip_cam_btn"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="64dp"
-        android:background="@color/transparent"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:scaleType="fitCenter"
+        android:layout_marginStart="64dp"
+        android:backgroundTint="@color/transparent"
         android:src="@drawable/baseline_cameraswitch_24"
         app:layout_constraintBottom_toBottomOf="@+id/capture_shutter"
         app:layout_constraintStart_toEndOf="@+id/capture_shutter"
@@ -44,11 +35,13 @@
 
     <ImageButton
         android:id="@+id/capture_shutter"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginBottom="32dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:backgroundTint="@color/transparent"
         android:scaleType="fitCenter"
+        android:clickable="true"
+        android:hapticFeedbackEnabled="true"
         android:src="@drawable/twotone_camera_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -85,20 +78,33 @@
         android:layout_width="1dp"
         android:layout_height="0dp"
         android:background="?android:attr/listDivider"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/previewView" />
 
-    <ImageView
+    <ImageButton
+        android:id="@+id/flash_btn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="@color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/flash_off"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.jsibbold.zoomage.ZoomageView
         android:id="@+id/captured_preview_image"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/previewView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/previewView"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/previewView"
         app:srcCompat="@drawable/button_background" />
 
