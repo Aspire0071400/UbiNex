@@ -197,10 +197,10 @@ class SoloChatActivity : AppCompatActivity() {
 
                 resultValue = result.data?.getStringExtra("capturedUri").toString()
 
-                Toast.makeText(this, "Image capture success successfully $resultValue", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, "Image capture success successfully $resultValue", Toast.LENGTH_SHORT).show()
                 val uri = Uri.parse(resultValue)
                 uploadImageToStorage(uri)
-                Toast.makeText(this, "$uri", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, "$uri", Toast.LENGTH_SHORT).show()
             }
         }
     }

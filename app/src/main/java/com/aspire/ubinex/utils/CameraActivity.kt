@@ -142,7 +142,7 @@ class CameraActivity :AppCompatActivity(){
             )
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this@CameraActivity, "Error creating temp file: ${e.message}", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this@CameraActivity, "Error creating temp file: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
