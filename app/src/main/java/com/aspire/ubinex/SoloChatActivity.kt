@@ -178,6 +178,7 @@ class SoloChatActivity : AppCompatActivity() {
         })
 
         setupUserStatusListener(receiverUid)
+
     }
 
     @Deprecated("Deprecated in Java")
