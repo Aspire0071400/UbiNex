@@ -13,8 +13,8 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.aspire.ubinex.databinding.ActivityMainBinding
 import com.aspire.ubinex.fragments.AccountFragment
+import com.aspire.ubinex.fragments.ChatBotFragment
 import com.aspire.ubinex.fragments.MessageFragment
-import com.aspire.ubinex.fragments.MusicFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
             insets
         }
         auth = FirebaseAuth.getInstance()
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.message -> binding.viewPager.currentItem = 0
-                R.id.music -> binding.viewPager.currentItem = 1
+                R.id.aibot -> binding.viewPager.currentItem = 1
                 R.id.account -> binding.viewPager.currentItem = 2
                 else -> {
                 }
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             override fun onPageSelected(position: Int) {
                 binding.bottomNavigationView.selectedItemId = when (position) {
                     0 -> R.id.message
-                    1 -> R.id.music
+                    1 -> R.id.aibot
                     2 -> R.id.account
                     else -> return
                 }
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         override fun getItem(position: Int): Fragment {
             return when (position) {
                 0 -> MessageFragment()
-                1 -> MusicFragment()
+                1 -> ChatBotFragment()
                 2 -> AccountFragment()
                 else -> throw IllegalArgumentException("Invalid position")
             }
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.view_pager)
-        if (currentFragment is MessageFragment || currentFragment is MusicFragment || currentFragment is AccountFragment) {
+        if (currentFragment is MessageFragment || currentFragment is ChatBotFragment || currentFragment is AccountFragment) {
             if (doubleBackToExitPressedOnce) {
 
                 updateUserStatus("offline")

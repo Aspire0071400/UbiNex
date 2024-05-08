@@ -4,9 +4,9 @@
         android:id="@+id/message"
         android:icon="@drawable/message_32" />
 
-    <item android:title="Music"
-        android:id="@+id/music"
-        android:icon="@drawable/music_32"/>
+    <item android:title="AI Bot"
+        android:id="@+id/aibot"
+        android:icon="@drawable/chat_bot"/>
 
     <item android:title="Account"
         android:id="@+id/account"

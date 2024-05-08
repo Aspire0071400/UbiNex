@@ -37,8 +37,8 @@ class ChatAdapter(
         private const val ITEM_SENT = 2
     }
 
-    var senderRoomId = senderRoom
-    var receiverRoomId = receiverRoom
+    private var senderRoomId = senderRoom
+    private var receiverRoomId = receiverRoom
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == ITEM_SENT) {
@@ -135,10 +135,7 @@ class ChatAdapter(
         dialog.setContentView(R.layout.image_dialog_layout)
         val imageView: ZoomageView = dialog.findViewById(R.id.image_preview)
         Glide.with(context)
-            //.asBitmap()
             .load(imageUrl)
-            //.apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.DATA))
-            // .transition(BitmapTransitionOptions.withCrossFade())
             .into(imageView)
         dialog.show()
     }

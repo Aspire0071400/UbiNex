@@ -9,29 +9,18 @@ import androidx.core.content.ContextCompat
 
 object PermissionHandler {
 
-    private const val REQUEST_PERMISSION_CODE = 111
+    private const val REQUEST_STORAGE_PERMISSION_CODE = 222
 
-    private val cameraXPermissionsList = arrayOf(
-        Manifest.permission.CAMERA,
+
+    private val storagePermissionsList: Array<String> = arrayOf(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.READ_MEDIA_IMAGES
     )
 
-    private val storagePermissionsList = arrayOf(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
-
-    fun requestCameraPermissions(activity: Activity) {
-        requestPermissions(activity, cameraXPermissionsList, REQUEST_PERMISSION_CODE)
-    }
-
-    fun checkCameraPermissions(activity: Activity): Boolean {
-        return checkPermissions(activity, cameraXPermissionsList)
-    }
 
     fun requestStoragePermissions(activity: Activity) {
-        requestPermissions(activity, storagePermissionsList, REQUEST_PERMISSION_CODE)
+        requestPermissions(activity, storagePermissionsList, REQUEST_STORAGE_PERMISSION_CODE)
     }
 
     fun checkStoragePermissions(activity: Activity): Boolean {
@@ -39,7 +28,9 @@ object PermissionHandler {
     }
 
     private fun requestPermissions(activity: Activity, permissions: Array<String>, requestCode: Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            ActivityCompat.requestPermissions(activity, permissions, requestCode)
+        }else if(Build.VERSION.SDK_INT > Build.VERSION_CODES.Q){
             ActivityCompat.requestPermissions(activity, permissions, requestCode)
         }
     }

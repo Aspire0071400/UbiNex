@@ -3,6 +3,7 @@ package com.aspire.ubinex
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -13,12 +14,13 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aspire.ubinex.adapter.ChatAdapter
 import com.aspire.ubinex.databinding.ActivitySoloChatBinding
 import com.aspire.ubinex.model.ChatModel
 import com.aspire.ubinex.utils.CameraActivity
-import com.aspire.ubinex.utils.PermissionHandler
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -71,6 +73,7 @@ class SoloChatActivity : AppCompatActivity() {
         senderRoom = "$receiverUid$senderUid"
         receiverRoom = "$senderUid$receiverUid"
 
+        //Adapter call.
         chatAdapter = ChatAdapter(context,binding.soloChatRecycler, messageList,senderRoom,receiverRoom)
 
         setContentView(binding.root)
@@ -140,18 +143,16 @@ class SoloChatActivity : AppCompatActivity() {
 
 
         binding.soloChatShareAttachment.setOnClickListener {
-            if(PermissionHandler.checkStoragePermissions(this)){
-                openGallery()
-            }else{
-                PermissionHandler.requestStoragePermissions(this)
-            }
+            openGallery()
         }
 
         binding.soloChatCamera.setOnClickListener {
-            if (PermissionHandler.checkCameraPermissions(this)) {
+            if(ContextCompat.checkSelfPermission(context,"Manifest.permission.CAMERA") == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(context,"Manifest.permission.WRITE_EXTERNAL_STORAGE") == PackageManager.PERMISSION_GRANTED){
                 cameraLauncher.launch(CameraActivity.createIntent(this))
-            } else {
-                PermissionHandler.requestCameraPermissions(this)
+            }else{
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE),111)
             }
         }
 
@@ -179,6 +180,29 @@ class SoloChatActivity : AppCompatActivity() {
 
         setupUserStatusListener(receiverUid)
 
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode){
+
+            111 ->{
+                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    cameraLauncher.launch(CameraActivity.createIntent(this))
+                }
+            }
+
+            222 ->{
+                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    openGallery()
+                }
+            }
+
+        }
     }
 
     @Deprecated("Deprecated in Java")

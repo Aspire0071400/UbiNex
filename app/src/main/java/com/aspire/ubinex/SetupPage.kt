@@ -68,11 +68,7 @@ class SetupPage : AppCompatActivity() {
         getExistingUserData()
 
         binding.setupImage.setOnClickListener {
-            if(PermissionHandler.checkStoragePermissions(this)){
                 openGallery()
-            }else{
-                PermissionHandler.requestStoragePermissions(this)
-            }
         }
 
         binding.saveSetupProfile.setOnClickListener {

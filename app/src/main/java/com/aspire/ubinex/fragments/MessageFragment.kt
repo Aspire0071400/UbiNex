@@ -31,10 +31,19 @@ class MessageFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentMessageBinding.inflate(inflater, container, false)
         return binding.root
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+//        ViewCompat.setOnApplyWindowInsetsListener(binding.messageFragment) { v, insets ->
+//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+//            insets
+//        }
+
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
         users = ArrayList()
