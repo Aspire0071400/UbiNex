@@ -58,7 +58,7 @@
         android:layout_marginTop="25dp"
         android:layout_marginEnd="25dp"
         android:visibility="invisible"
-        app:srcCompat="@drawable/baseline_circle_24" />
+        app:srcCompat="@drawable/edt_material_background" />
 
     <ImageView
         android:id="@+id/item_user_pinned_indicator"

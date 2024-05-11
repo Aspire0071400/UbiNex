@@ -17,6 +17,7 @@ class ChatBotFragment : Fragment() {
     private lateinit var botAdapter: BotAdapter
     private lateinit var botList: ArrayList<BotModel>
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
