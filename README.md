@@ -3,11 +3,15 @@
 Android Chat-App made using Kotlin. The app provides basic one-to-one chat feature along with message deletion user-specific and image sharing.
 
 
-## feature:
+## Feature:
 * OTP SignIn.
 * Image Sharing
 * one-to-one Chat
 * CameraX for instant image sharing
+
+## Updates:
+* Now user can update their profiles in the Accounts page
+* Logout button added
 
 ## Tech Stack:
 * Android Studio
