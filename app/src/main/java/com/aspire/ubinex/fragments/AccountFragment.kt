@@ -69,7 +69,16 @@ class AccountFragment : Fragment() {
             }
         }
 
-        binding.updateAccount.setOnClickListener {updateAccount()}
+        binding.editAccount.visibility = View.VISIBLE
+        binding.editAccount.setOnClickListener {
+            binding.editAccount.visibility = View.GONE
+            binding.updateAccount.visibility = View.VISIBLE
+        }
+        binding.updateAccount.setOnClickListener {
+            updateAccount()
+            binding.editAccount.visibility = View.VISIBLE
+            binding.updateAccount.visibility = View.GONE
+        }
         binding.logout.setOnClickListener {
             showLogoutConfirmationDialog()
         }

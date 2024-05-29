@@ -119,12 +119,13 @@
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_marginTop="64dp"
+        android:background="@drawable/button_background"
         android:elevation="10dp"
         android:text="update"
-        android:textSize="22sp"
-        android:textColor="@color/white"
         android:textAllCaps="true"
-        android:background="@drawable/button_background"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/gender_spinner_account"
         app:layout_constraintStart_toStartOf="@+id/gender_spinner_account"
         app:layout_constraintTop_toBottomOf="@+id/gender_spinner_account" />
@@ -168,5 +169,20 @@
         app:layout_constraintEnd_toEndOf="@+id/account_image"
         app:layout_constraintStart_toStartOf="@+id/account_image"
         app:layout_constraintTop_toBottomOf="@+id/account_image" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/edit_account"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="64dp"
+        android:background="@drawable/button_background"
+        android:elevation="10dp"
+        android:text="edit"
+        android:textAllCaps="true"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="@+id/editText"
+        app:layout_constraintStart_toStartOf="@+id/editText"
+        app:layout_constraintTop_toBottomOf="@+id/editText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
