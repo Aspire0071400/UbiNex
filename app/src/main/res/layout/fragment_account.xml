@@ -14,6 +14,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/toolbar_background_custom"
         android:backgroundTint="@color/white"
+        android:elevation="20dp"
+        android:outlineSpotShadowColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -35,154 +37,176 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/account_image"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="40dp"
-        android:elevation="10dp"
-        android:src="@drawable/place_holder"
-        app:civ_border_color="@color/black"
-        app:civ_border_width="2dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
-    <EditText
-        android:id="@+id/account_username_edt"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/edt_material_background"
-        android:elevation="10dp"
-        android:ems="10"
-        android:hint="Username"
-        android:inputType="text"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/account_image"
-        app:layout_constraintStart_toStartOf="@+id/account_image"
-        app:layout_constraintTop_toBottomOf="@+id/phoneNumber_account" />
-
-    <EditText
-        android:id="@+id/account_email_edt"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/edt_material_background"
-        android:ems="10"
-        android:elevation="10dp"
-        android:inputType="textEmailAddress"
-        android:hint="Email"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/account_username_edt"
-        app:layout_constraintStart_toStartOf="@+id/account_username_edt"
-        app:layout_constraintTop_toBottomOf="@+id/account_username_edt" />
-
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/edt_material_background"
-        android:clickable="false"
-        android:defaultFocusHighlightEnabled="false"
-        android:ems="10"
-        android:elevation="10dp"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:focusedByDefault="false"
-        android:selectAllOnFocus="false"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/account_email_edt"
-        app:layout_constraintStart_toStartOf="@+id/account_email_edt"
-        app:layout_constraintTop_toBottomOf="@+id/account_email_edt" />
-
-    <Spinner
-        android:id="@+id/gender_spinner_account"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:elevation="25dp"
-        android:popupBackground="@drawable/edt_material_background"
-        app:layout_constraintBottom_toBottomOf="@+id/editText"
-        app:layout_constraintEnd_toEndOf="@+id/account_email_edt"
-        app:layout_constraintStart_toStartOf="@+id/editText"
-        app:layout_constraintTop_toTopOf="@+id/editText" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/update_account"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="64dp"
-        android:background="@drawable/button_background"
-        android:elevation="10dp"
-        android:text="update"
-        android:textAllCaps="true"
-        android:textColor="@color/white"
-        android:textSize="22sp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@+id/gender_spinner_account"
-        app:layout_constraintStart_toStartOf="@+id/gender_spinner_account"
-        app:layout_constraintTop_toBottomOf="@+id/gender_spinner_account" />
-
-    <View
-        android:id="@+id/loading_bg_account"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/loading_back_color"
-        android:elevation="50dp"
-        android:visibility="gone"
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-    <ProgressBar
-        android:id="@+id/progressBar_account"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:backgroundTint="@color/teal_main"
-        android:elevation="50dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/loading_bg_account"
-        app:layout_constraintEnd_toEndOf="@+id/loading_bg_account"
-        app:layout_constraintStart_toStartOf="@+id/loading_bg_account"
-        app:layout_constraintTop_toTopOf="@+id/loading_bg_account" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/phoneNumber_account"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="32dp"
-        android:gravity="center"
-        android:background="@drawable/edt_material_background"
-        android:elevation="10dp"
-        android:textSize="18sp"
-        android:textColor="@color/black"
-        android:text="Phone Number"
-        app:layout_constraintEnd_toEndOf="@+id/account_image"
-        app:layout_constraintStart_toStartOf="@+id/account_image"
-        app:layout_constraintTop_toBottomOf="@+id/account_image" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/account_image"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="32dp"
+                android:elevation="10dp"
+                android:src="@drawable/place_holder"
+                app:civ_border_color="@color/black"
+                app:civ_border_width="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/edit_account"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="64dp"
-        android:background="@drawable/button_background"
-        android:elevation="10dp"
-        android:text="edit"
-        android:textAllCaps="true"
-        android:textColor="@color/white"
-        android:textSize="22sp"
-        app:layout_constraintEnd_toEndOf="@+id/editText"
-        app:layout_constraintStart_toStartOf="@+id/editText"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
+            <EditText
+                android:id="@+id/account_username_edt"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/edt_material_background"
+                android:elevation="10dp"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="Username"
+                android:inputType="text"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/account_image"
+                app:layout_constraintStart_toStartOf="@+id/account_image"
+                app:layout_constraintTop_toBottomOf="@+id/phoneNumber_account" />
+
+            <EditText
+                android:id="@+id/account_email_edt"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/edt_material_background"
+                android:elevation="10dp"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/account_username_edt"
+                app:layout_constraintStart_toStartOf="@+id/account_username_edt"
+                app:layout_constraintTop_toBottomOf="@+id/account_username_edt" />
+
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/edt_material_background"
+                android:clickable="false"
+                android:defaultFocusHighlightEnabled="false"
+                android:elevation="10dp"
+                android:ems="10"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:focusedByDefault="false"
+                android:selectAllOnFocus="false"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/account_email_edt"
+                app:layout_constraintStart_toStartOf="@+id/account_email_edt"
+                app:layout_constraintTop_toBottomOf="@+id/account_email_edt" />
+
+            <Spinner
+                android:id="@+id/gender_spinner_account"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:clickable="false"
+                android:elevation="25dp"
+                android:popupBackground="@drawable/edt_material_background"
+                app:layout_constraintBottom_toBottomOf="@+id/editText"
+                app:layout_constraintEnd_toEndOf="@+id/account_email_edt"
+                app:layout_constraintStart_toStartOf="@+id/editText"
+                app:layout_constraintTop_toTopOf="@+id/editText" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/update_account"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="64dp"
+                android:layout_marginBottom="60dp"
+                android:background="@drawable/button_background"
+                android:elevation="10dp"
+                android:text="update"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/gender_spinner_account"
+                app:layout_constraintStart_toStartOf="@+id/gender_spinner_account"
+                app:layout_constraintTop_toBottomOf="@+id/gender_spinner_account" />
+
+            <View
+                android:id="@+id/loading_bg_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/loading_back_color"
+                android:elevation="50dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ProgressBar
+                android:id="@+id/progressBar_account"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:backgroundTint="@color/teal_main"
+                android:elevation="50dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/loading_bg_account"
+                app:layout_constraintEnd_toEndOf="@+id/loading_bg_account"
+                app:layout_constraintStart_toStartOf="@+id/loading_bg_account"
+                app:layout_constraintTop_toTopOf="@+id/loading_bg_account" />
+
+            <TextView
+                android:id="@+id/phoneNumber_account"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/edt_material_background"
+                android:elevation="10dp"
+                android:gravity="center"
+                android:text="Phone Number"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="@+id/account_image"
+                app:layout_constraintStart_toStartOf="@+id/account_image"
+                app:layout_constraintTop_toBottomOf="@+id/account_image" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/edit_account"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="64dp"
+                android:layout_marginBottom="60dp"
+                android:background="@drawable/button_background"
+                android:elevation="10dp"
+                android:text="edit"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/editText"
+                app:layout_constraintStart_toStartOf="@+id/editText"
+                app:layout_constraintTop_toBottomOf="@+id/editText" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

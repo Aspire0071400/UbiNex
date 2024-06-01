@@ -10,4 +10,5 @@
     <color name="loading_back_color">#80000000</color>
     <color name="green">#31ED35</color>
     <color name="matte_grey">#717171</color>
+    <color name="sketchy_grey">#999999</color>
 </resources>

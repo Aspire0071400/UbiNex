@@ -73,11 +73,15 @@ class AccountFragment : Fragment() {
         binding.editAccount.setOnClickListener {
             binding.editAccount.visibility = View.GONE
             binding.updateAccount.visibility = View.VISIBLE
+            binding.accountUsernameEdt.isEnabled = true
+            binding.accountEmailEdt.isEnabled = true
         }
         binding.updateAccount.setOnClickListener {
             updateAccount()
             binding.editAccount.visibility = View.VISIBLE
             binding.updateAccount.visibility = View.GONE
+            binding.accountUsernameEdt.isEnabled = false
+            binding.accountEmailEdt.isEnabled = false
         }
         binding.logout.setOnClickListener {
             showLogoutConfirmationDialog()

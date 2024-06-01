@@ -98,10 +98,10 @@ class UserListAdapter(
                     val userStatus = statusSnapshot.child("status").value?.toString()
                     if (userStatus == "active" || userStatus == "online") {
                         // If user is active or online, set visibility of presence indicator to gone
-                        holder.binding.itemUserPresenceIndicator.visibility = View.VISIBLE
+                        //holder.binding.itemUserPresenceIndicator.visibility = View.VISIBLE
                     } else {
                         // If user status is not active or online, set visibility to visible
-                        holder.binding.itemUserPresenceIndicator.visibility = View.GONE
+                        //holder.binding.itemUserPresenceIndicator.visibility = View.GONE
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {
