@@ -42,7 +42,7 @@ class SetupPage : AppCompatActivity() {
         fireStoreDB = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
 
-        genders = listOf("Gender", "Male", "Female", "transgender", "Others")
+        genders = listOf("Gender", "Male", "Female", "Transgender", "Others")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, genders)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.genderSpinner.adapter = adapter

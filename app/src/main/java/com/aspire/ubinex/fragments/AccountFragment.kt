@@ -52,7 +52,7 @@ class AccountFragment : Fragment() {
         storage = FirebaseStorage.getInstance()
         context = requireContext()
 
-        genders = listOf("Gender", "Male", "Female", "transgender", "Others")
+        genders = listOf("Gender", "Male", "Female", "Transgender", "Others")
         val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, genders)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.genderSpinnerAccount.adapter = adapter
