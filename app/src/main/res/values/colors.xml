@@ -9,6 +9,7 @@
     <color name="link_blue">#4171F0</color>
     <color name="loading_back_color">#80000000</color>
     <color name="green">#31ED35</color>
-    <color name="matte_grey">#717171</color>
-    <color name="sketchy_grey">#999999</color>
+    <color name="grey_dark">#717171</color>
+    <color name="grey_light">#999999</color>
+    <color name="grey_whiter">#DCDCDC</color>
 </resources>

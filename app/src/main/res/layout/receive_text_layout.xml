@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginEnd="50dp"
-    android:background="@color/transparent"
     android:layout_gravity="start">
 
     <androidx.cardview.widget.CardView
@@ -13,9 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:backgroundTint="@color/transparent"
-        app:cardElevation="20dp"
+        android:backgroundTint="@color/grey_whiter"
+        app:cardCornerRadius="20dp"
         app:layout_constraintBottom_toTopOf="@+id/receiver_text_time"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,22 +23,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:background="@drawable/receive_text_background"
             android:padding="10dp">
 
             <TextView
                 android:id="@+id/receiver_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/white"
-                android:textSize="16sp"
                 android:autoLink="web|map|email|phone"
+                android:elevation="10dp"
+                android:maxWidth="320dp"
+                android:paddingHorizontal="10dp"
+                android:text=""
+                android:textColor="@color/black"
                 android:textColorLink="@color/link_blue"
-                android:visibility="visible"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -53,19 +54,19 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
-        android:backgroundTint="@color/transparent"
+        android:backgroundTint="@color/grey_whiter"
         android:visibility="gone"
-        app:cardElevation="20dp"
+        app:cardCornerRadius="10dp"
         app:layout_constraintBottom_toTopOf="@+id/receiver_text_time"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:background="@color/matte_grey"
-            android:padding="5dp">
+            android:padding="10dp">
 
             <ImageView
                 android:id="@+id/receiver_doc"
